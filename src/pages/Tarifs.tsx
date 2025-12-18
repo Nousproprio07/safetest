@@ -6,9 +6,9 @@ const pricingPlans = [
   {
     name: "Essentiel",
     description: "Pour les propriétaires occasionnels",
-    price: "29",
+    price: "49",
     verifications: "10",
-    pricePerVerif: "2,90€",
+    pricePerVerif: "4,90€",
     features: [
       "10 vérifications incluses",
       "Score de confiance détaillé",
@@ -22,11 +22,11 @@ const pricingPlans = [
   {
     name: "Pro",
     description: "Le plus populaire pour les hôtes réguliers",
-    price: "50",
-    verifications: "15",
-    pricePerVerif: "3,33€",
+    price: "119",
+    verifications: "25",
+    pricePerVerif: "4,76€",
     features: [
-      "15 vérifications incluses",
+      "25 vérifications incluses",
       "Score de confiance détaillé",
       "Vérification d'identité avancée",
       "Vérification bancaire",
@@ -38,11 +38,11 @@ const pricingPlans = [
     icon: Star,
   },
   {
-    name: "Conciergerie",
+    name: "Premium",
     description: "Pour les professionnels de la location",
-    price: "120",
+    price: "229",
     verifications: "50",
-    pricePerVerif: "2,40€",
+    pricePerVerif: "4,58€",
     features: [
       "50 vérifications incluses",
       "Score de confiance détaillé",
