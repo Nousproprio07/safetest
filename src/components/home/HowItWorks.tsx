@@ -1,4 +1,4 @@
-import { UserCheck, Link2, MessageSquare, ShieldCheck } from "lucide-react";
+import { UserCheck, Link2, MessageSquare, ShieldCheck, Bell } from "lucide-react";
 
 const steps = [
   {
@@ -24,6 +24,12 @@ const steps = [
     icon: ShieldCheck,
     title: "Voyageur vérifié",
     description: "Le voyageur saisit le code logement et son ID de réservation. Une fois validé, il est vérifié pour un an.",
+  },
+  {
+    number: "05",
+    icon: Bell,
+    title: "Alerte en cas de risque",
+    description: "En cas d'anomalie ou de risque de fraude, vous ou votre conciergerie recevez une notification immédiate pour intervenir.",
   },
 ];
 
