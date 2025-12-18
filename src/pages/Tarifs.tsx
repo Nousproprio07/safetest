@@ -1,6 +1,15 @@
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
-import { Check, Star, Shield, Zap } from "lucide-react";
+import { Check, Star, Shield, Zap, ChevronLeft, ChevronRight, X } from "lucide-react";
+import { useRef, useState, useEffect } from "react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 const pricingPlans = [
   {
@@ -57,7 +66,62 @@ const pricingPlans = [
   },
 ];
 
+const comparisonFeatures = [
+  { name: "Vérifications incluses", essentiel: "10", pro: "25", premium: "50" },
+  { name: "Prix par vérification", essentiel: "4,90€", pro: "4,76€", premium: "4,58€" },
+  { name: "Score de confiance détaillé", essentiel: true, pro: true, premium: true },
+  { name: "Vérification d'identité", essentiel: true, pro: true, premium: true },
+  { name: "Vérification d'identité avancée", essentiel: false, pro: true, premium: true },
+  { name: "Vérification bancaire", essentiel: false, pro: true, premium: true },
+  { name: "Support par email", essentiel: true, pro: true, premium: true },
+  { name: "Support prioritaire", essentiel: false, pro: true, premium: true },
+  { name: "Support dédié", essentiel: false, pro: false, premium: true },
+  { name: "API d'intégration", essentiel: false, pro: false, premium: true },
+  { name: "Tableau de bord analytics", essentiel: false, pro: false, premium: true },
+  { name: "Validité", essentiel: "12 mois", pro: "12 mois", premium: "12 mois" },
+];
+
 const Tarifs = () => {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
+
+  const checkScrollButtons = () => {
+    if (scrollRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
+      setCanScrollLeft(scrollLeft > 0);
+      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10);
+    }
+  };
+
+  useEffect(() => {
+    checkScrollButtons();
+    window.addEventListener("resize", checkScrollButtons);
+    return () => window.removeEventListener("resize", checkScrollButtons);
+  }, []);
+
+  const scroll = (direction: "left" | "right") => {
+    if (scrollRef.current) {
+      const scrollAmount = 320;
+      scrollRef.current.scrollBy({
+        left: direction === "left" ? -scrollAmount : scrollAmount,
+        behavior: "smooth",
+      });
+      setTimeout(checkScrollButtons, 300);
+    }
+  };
+
+  const renderFeatureValue = (value: boolean | string) => {
+    if (typeof value === "boolean") {
+      return value ? (
+        <Check className="w-5 h-5 text-accent mx-auto" />
+      ) : (
+        <X className="w-5 h-5 text-muted-foreground/40 mx-auto" />
+      );
+    }
+    return <span className="font-medium">{value}</span>;
+  };
+
   return (
     <Layout>
       {/* Header */}
@@ -73,114 +137,164 @@ const Tarifs = () => {
         </div>
       </section>
 
-      {/* Pricing Cards */}
+      {/* Pricing Cards - Mobile Carousel */}
       <section className="py-16 md:py-24 bg-background">
         <div className="container mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            {pricingPlans.map((plan, index) => (
-              <div
-                key={plan.name}
-                className={`relative rounded-2xl p-6 md:p-8 animate-fade-up ${
-                  plan.popular
-                    ? "bg-gradient-primary text-primary-foreground scale-105 shadow-xl"
-                    : "bg-card border border-border shadow-card"
-                }`}
-                style={{ animationDelay: `${index * 100}ms` }}
-              >
-                {/* Popular Badge */}
-                {plan.popular && (
-                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 bg-accent text-accent-foreground text-sm font-semibold rounded-full">
-                    Le plus populaire
-                  </div>
-                )}
-
-                {/* Icon */}
+          {/* Mobile: Horizontal scroll with arrows */}
+          <div className="md:hidden relative">
+            <div
+              ref={scrollRef}
+              onScroll={checkScrollButtons}
+              className="flex gap-4 overflow-x-auto scrollbar-hide pb-4 snap-x snap-mandatory px-4"
+              style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+            >
+              {pricingPlans.map((plan) => (
                 <div
-                  className={`w-12 h-12 rounded-xl flex items-center justify-center mb-6 ${
+                  key={plan.name}
+                  className={`relative flex-shrink-0 w-[300px] rounded-2xl p-6 snap-center ${
                     plan.popular
-                      ? "bg-primary-foreground/10"
-                      : "bg-gradient-primary"
+                      ? "bg-gradient-primary text-primary-foreground"
+                      : "bg-card border border-border shadow-card"
                   }`}
                 >
-                  <plan.icon
-                    className={`w-6 h-6 ${
-                      plan.popular ? "text-primary-foreground" : "text-primary-foreground"
-                    }`}
-                  />
-                </div>
+                  {plan.popular && (
+                    <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 bg-accent text-accent-foreground text-sm font-semibold rounded-full">
+                      Le plus populaire
+                    </div>
+                  )}
 
-                {/* Plan Info */}
-                <h3
-                  className={`text-xl font-bold mb-2 ${
-                    plan.popular ? "text-primary-foreground" : "text-foreground"
-                  }`}
-                >
-                  {plan.name}
-                </h3>
-                <p
-                  className={`text-sm mb-6 ${
-                    plan.popular ? "text-primary-foreground/80" : "text-muted-foreground"
-                  }`}
-                >
-                  {plan.description}
-                </p>
-
-                {/* Price */}
-                <div className="mb-6">
-                  <div className="flex items-baseline gap-1">
-                    <span
-                      className={`text-4xl font-bold ${
-                        plan.popular ? "text-primary-foreground" : "text-foreground"
-                      }`}
-                    >
-                      {plan.price}€
-                    </span>
-                  </div>
-                  <p
-                    className={`text-sm mt-1 ${
-                      plan.popular ? "text-primary-foreground/70" : "text-muted-foreground"
+                  <div
+                    className={`w-12 h-12 rounded-xl flex items-center justify-center mb-6 ${
+                      plan.popular ? "bg-primary-foreground/10" : "bg-gradient-primary"
                     }`}
                   >
-                    {plan.verifications} vérifications • {plan.pricePerVerif}/vérif
+                    <plan.icon className="w-6 h-6 text-primary-foreground" />
+                  </div>
+
+                  <h3 className={`text-xl font-bold mb-2 ${plan.popular ? "text-primary-foreground" : "text-foreground"}`}>
+                    {plan.name}
+                  </h3>
+                  <p className={`text-sm mb-6 ${plan.popular ? "text-primary-foreground/80" : "text-muted-foreground"}`}>
+                    {plan.description}
                   </p>
+
+                  <div className="mb-6">
+                    <span className={`text-4xl font-bold ${plan.popular ? "text-primary-foreground" : "text-foreground"}`}>
+                      {plan.price}€
+                    </span>
+                    <p className={`text-sm mt-1 ${plan.popular ? "text-primary-foreground/70" : "text-muted-foreground"}`}>
+                      {plan.verifications} vérifications • {plan.pricePerVerif}/vérif
+                    </p>
+                  </div>
+
+                  <ul className="space-y-3 mb-8">
+                    {plan.features.map((feature) => (
+                      <li key={feature} className="flex items-start gap-3">
+                        <Check className={`w-5 h-5 flex-shrink-0 mt-0.5 ${plan.popular ? "text-accent" : "text-accent"}`} />
+                        <span className={`text-sm ${plan.popular ? "text-primary-foreground/90" : "text-foreground"}`}>
+                          {feature}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  <Button
+                    className={`w-full ${plan.popular ? "bg-primary-foreground text-primary hover:bg-primary-foreground/90" : ""}`}
+                    variant={plan.popular ? "default" : "hero"}
+                    size="lg"
+                  >
+                    Choisir ce pack
+                  </Button>
                 </div>
+              ))}
+            </div>
 
-                {/* Features */}
-                <ul className="space-y-3 mb-8">
-                  {plan.features.map((feature) => (
-                    <li key={feature} className="flex items-start gap-3">
-                      <Check
-                        className={`w-5 h-5 flex-shrink-0 mt-0.5 ${
-                          plan.popular ? "text-accent" : "text-accent"
-                        }`}
-                      />
-                      <span
-                        className={`text-sm ${
-                          plan.popular
-                            ? "text-primary-foreground/90"
-                            : "text-foreground"
-                        }`}
-                      >
-                        {feature}
-                      </span>
-                    </li>
+            {/* Navigation Arrows */}
+            <div className="flex justify-center gap-4 mt-4">
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => scroll("left")}
+                disabled={!canScrollLeft}
+                className="rounded-full"
+              >
+                <ChevronLeft className="w-5 h-5" />
+              </Button>
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => scroll("right")}
+                disabled={!canScrollRight}
+                className="rounded-full"
+              >
+                <ChevronRight className="w-5 h-5" />
+              </Button>
+            </div>
+          </div>
+
+          {/* Desktop: Comparison Table */}
+          <div className="hidden md:block max-w-5xl mx-auto">
+            <div className="rounded-2xl border border-border overflow-hidden bg-card">
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-muted/50">
+                    <TableHead className="w-[280px] font-semibold text-foreground">Fonctionnalités</TableHead>
+                    <TableHead className="text-center font-semibold text-foreground">
+                      <div className="flex flex-col items-center gap-1">
+                        <Shield className="w-5 h-5 text-primary" />
+                        <span>Essentiel</span>
+                        <span className="text-2xl font-bold text-primary">49€</span>
+                      </div>
+                    </TableHead>
+                    <TableHead className="text-center font-semibold text-foreground bg-primary/10 border-x border-primary/20">
+                      <div className="flex flex-col items-center gap-1">
+                        <Star className="w-5 h-5 text-primary" />
+                        <span>Pro</span>
+                        <span className="text-xs text-primary font-medium">Le plus populaire</span>
+                        <span className="text-2xl font-bold text-primary">119€</span>
+                      </div>
+                    </TableHead>
+                    <TableHead className="text-center font-semibold text-foreground">
+                      <div className="flex flex-col items-center gap-1">
+                        <Zap className="w-5 h-5 text-primary" />
+                        <span>Premium</span>
+                        <span className="text-2xl font-bold text-primary">229€</span>
+                      </div>
+                    </TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {comparisonFeatures.map((feature, index) => (
+                    <TableRow key={feature.name} className={index % 2 === 0 ? "bg-background" : "bg-muted/30"}>
+                      <TableCell className="font-medium text-foreground">{feature.name}</TableCell>
+                      <TableCell className="text-center">{renderFeatureValue(feature.essentiel)}</TableCell>
+                      <TableCell className="text-center bg-primary/5 border-x border-primary/10">
+                        {renderFeatureValue(feature.pro)}
+                      </TableCell>
+                      <TableCell className="text-center">{renderFeatureValue(feature.premium)}</TableCell>
+                    </TableRow>
                   ))}
-                </ul>
-
-                {/* CTA Button */}
-                <Button
-                  className={`w-full ${
-                    plan.popular
-                      ? "bg-primary-foreground text-primary hover:bg-primary-foreground/90"
-                      : ""
-                  }`}
-                  variant={plan.popular ? "default" : "hero"}
-                  size="lg"
-                >
-                  Choisir ce pack
-                </Button>
-              </div>
-            ))}
+                  <TableRow>
+                    <TableCell></TableCell>
+                    <TableCell className="text-center py-6">
+                      <Button variant="outline-primary" className="w-full max-w-[160px]">
+                        Choisir Essentiel
+                      </Button>
+                    </TableCell>
+                    <TableCell className="text-center py-6 bg-primary/5 border-x border-primary/10">
+                      <Button variant="hero" className="w-full max-w-[160px]">
+                        Choisir Pro
+                      </Button>
+                    </TableCell>
+                    <TableCell className="text-center py-6">
+                      <Button variant="outline-primary" className="w-full max-w-[160px]">
+                        Choisir Premium
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </div>
           </div>
 
           {/* Additional Info */}

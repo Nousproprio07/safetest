@@ -68,10 +68,10 @@ const WhySection = () => {
             <strong> le compte bancaire</strong> pour attribuer un score de confiance fiable. 
             Protégez-vous avant l'arrivée du locataire.
           </p>
-          <div className="flex flex-wrap justify-center gap-4 text-sm text-primary-foreground/80">
+        <div className="flex flex-wrap justify-center gap-4 text-sm text-primary-foreground/80">
             <span className="px-4 py-2 bg-primary-foreground/10 rounded-full">✓ Voyageurs protégés</span>
-            <span className="px-4 py-2 bg-primary-foreground/10 rounded-full">✓ Propriétaires sécurisés</span>
-            <span className="px-4 py-2 bg-primary-foreground/10 rounded-full">✓ Transactions vérifiées</span>
+            <span className="px-4 py-2 bg-primary-foreground/10 rounded-full">✓ Propriétaires vérifiés</span>
+            <span className="px-4 py-2 bg-primary-foreground/10 rounded-full">✓ Transactions sécurisées</span>
           </div>
         </div>
       </div>
