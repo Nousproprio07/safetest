@@ -21,14 +21,14 @@ const Hero = () => {
 
             {/* Title */}
             <h1 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-foreground leading-tight mb-6 animate-fade-up animation-delay-100">
-              Vérifiez vos locataires{" "}
-              <span className="text-gradient-primary">en toute confiance</span>
+              Protégez vos locations{" "}
+              <span className="text-gradient-primary">contre la fraude</span>
             </h1>
 
             {/* Subtitle */}
             <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-8 leading-relaxed animate-fade-up animation-delay-200">
-              SafeVerify protège propriétaires et voyageurs contre la fraude grâce à une 
-              vérification d'identité poussée et un score de confiance fiable.
+              SafeVerify sécurise propriétaires et voyageurs grâce à une vérification 
+              d'identité certifiée : analyse de cohérence, détection de fraude et score de confiance fiable.
             </p>
 
             {/* CTA Buttons */}
