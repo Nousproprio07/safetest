@@ -1,29 +1,29 @@
-import { Upload, Search, CheckCircle2, Shield } from "lucide-react";
+import { UserCheck, Link2, MessageSquare, ShieldCheck } from "lucide-react";
 
 const steps = [
   {
     number: "01",
-    icon: Upload,
-    title: "Envoi de la réservation",
-    description: "Le propriétaire transfère l'email de confirmation de réservation (Airbnb, Booking, etc.).",
+    icon: UserCheck,
+    title: "Propriétaire vérifié",
+    description: "Créez votre compte et authentifiez-vous. Vos biens immobiliers sont enregistrés et vérifiés.",
   },
   {
     number: "02",
-    icon: Search,
-    title: "Analyse automatique",
-    description: "Notre IA vérifie l'identité, la cohérence des données et détecte les anomalies.",
+    icon: Link2,
+    title: "Connexion simplifiée",
+    description: "Reliez votre plateforme de location (Airbnb, Booking) à SafeVerify en quelques clics.",
   },
   {
     number: "03",
-    icon: Shield,
-    title: "Score de confiance",
-    description: "Un score clair et détaillé est généré pour évaluer le risque de la réservation.",
+    icon: MessageSquare,
+    title: "Message automatique",
+    description: "À chaque réservation, un lien SafeVerify est envoyé automatiquement au voyageur via la plateforme.",
   },
   {
     number: "04",
-    icon: CheckCircle2,
-    title: "Décision éclairée",
-    description: "Le propriétaire accepte ou refuse la réservation en toute connaissance de cause.",
+    icon: ShieldCheck,
+    title: "Voyageur vérifié",
+    description: "Le voyageur saisit le code logement et son ID de réservation. Une fois validé, il est vérifié pour un an.",
   },
 ];
 
