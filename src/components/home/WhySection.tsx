@@ -4,7 +4,7 @@ const fraudTypes = [
   {
     icon: UserX,
     title: "Usurpation d'identité",
-    description: "Des locataires utilisent de faux documents ou l'identité d'autrui pour réserver.",
+    description: "Des fraudeurs volent l'identité de voyageurs honnêtes pour réserver à leur place.",
   },
   {
     icon: AlertTriangle,
@@ -19,7 +19,7 @@ const fraudTypes = [
   {
     icon: ShieldAlert,
     title: "Pertes financières",
-    description: "Dégradations, impayés et litiges coûteux pour les propriétaires.",
+    description: "Dégradations, impayés, sous-location illégale, squat et litiges coûteux pour les propriétaires.",
   },
 ];
 
