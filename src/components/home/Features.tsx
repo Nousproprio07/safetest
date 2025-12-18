@@ -1,15 +1,10 @@
-import { Shield, UserCheck, CreditCard, FileCheck, Lock, Zap } from "lucide-react";
+import { Shield, UserCheck, CreditCard, Zap } from "lucide-react";
 
 const features = [
   {
     icon: UserCheck,
     title: "Vérification d'identité",
     description: "Analyse approfondie des documents d'identité avec détection de fraude avancée.",
-  },
-  {
-    icon: FileCheck,
-    title: "Cohérence des données",
-    description: "Vérification croisée Personne / Réservation / Compte bancaire.",
   },
   {
     icon: Shield,
@@ -20,11 +15,6 @@ const features = [
     icon: CreditCard,
     title: "Compatible Airbnb & Booking",
     description: "Intégration transparente avec les principales plateformes de location.",
-  },
-  {
-    icon: Lock,
-    title: "100% RGPD",
-    description: "Vos données sont protégées et traitées conformément à la réglementation.",
   },
   {
     icon: Zap,
