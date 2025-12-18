@@ -65,8 +65,8 @@ const WhySection = () => {
           </h3>
           <p className="text-primary-foreground/90 max-w-2xl mx-auto mb-6">
             SafeVerify analyse la cohérence entre <strong>l'identité</strong>, <strong>la réservation</strong> et 
-            <strong> le compte bancaire</strong> pour attribuer un score de confiance fiable. 
-            Protégez-vous avant l'arrivée du locataire.
+            <strong> les données renseignées</strong> pour attribuer un score de confiance fiable. 
+            Protégez-vous avant de mettre en location.
           </p>
         <div className="flex flex-wrap justify-center gap-4 text-sm text-primary-foreground/80">
             <span className="px-4 py-2 bg-primary-foreground/10 rounded-full">✓ Voyageurs vérifiés</span>
