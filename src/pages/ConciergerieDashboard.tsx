@@ -7,7 +7,6 @@ import {
   Shield, 
   Home, 
   CheckCircle2, 
-  Circle, 
   AlertCircle, 
   Settings, 
   LogOut, 
@@ -18,7 +17,8 @@ import {
   Calendar,
   User,
   Flag,
-  Building2
+  Building2,
+  ChevronUp
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -26,6 +26,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 
 // Mock data for property owners (clients)
 const mockClients = [
@@ -91,6 +96,7 @@ const ConciergerieDashboard = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [selectedClient, setSelectedClient] = useState(mockClients[0]);
   const [selectedProperty, setSelectedProperty] = useState<string | null>(null);
+  const [expandedPropertyMobile, setExpandedPropertyMobile] = useState<string | null>(null);
 
   const clientProperties = mockProperties[selectedClient.id] || [];
   const selectedPropertyData = clientProperties.find(p => p.id === selectedProperty);
@@ -229,30 +235,99 @@ const ConciergerieDashboard = () => {
               </CardHeader>
               <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0">
                 <div className="space-y-2">
-                  {clientProperties.map((property) => (
-                    <button
-                      key={property.id}
-                      onClick={() => setSelectedProperty(property.id)}
-                      className={`w-full text-left p-3 rounded-lg border transition-all ${
-                        selectedProperty === property.id 
-                          ? "border-primary bg-primary/5" 
-                          : "border-border hover:border-primary/50 hover:bg-muted/50"
-                      }`}
-                    >
-                      <div className="font-medium text-sm">{property.name}</div>
-                      <div className="text-xs text-muted-foreground mt-1">{property.address}</div>
-                      <div className="text-xs text-muted-foreground mt-1">
-                        {property.verificationsCount} vérifications
+                  {clientProperties.map((property) => {
+                    const verifications = mockVerifications[property.id] || [];
+                    const isExpanded = expandedPropertyMobile === property.id;
+                    
+                    return (
+                      <div key={property.id}>
+                        {/* Desktop: simple button to select */}
+                        <button
+                          onClick={() => {
+                            // Desktop: select property for right panel
+                            setSelectedProperty(property.id);
+                            // Mobile: toggle accordion
+                            setExpandedPropertyMobile(isExpanded ? null : property.id);
+                          }}
+                          className={`w-full text-left p-3 rounded-lg border transition-all ${
+                            selectedProperty === property.id || isExpanded
+                              ? "border-primary bg-primary/5" 
+                              : "border-border hover:border-primary/50 hover:bg-muted/50"
+                          }`}
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex-1">
+                              <div className="font-medium text-sm">{property.name}</div>
+                              <div className="text-xs text-muted-foreground mt-1">{property.address}</div>
+                              <div className="text-xs text-muted-foreground mt-1">
+                                {property.verificationsCount} vérifications
+                              </div>
+                            </div>
+                            {/* Mobile accordion indicator */}
+                            <div className="lg:hidden ml-2">
+                              {isExpanded ? (
+                                <ChevronUp className="h-4 w-4 text-muted-foreground" />
+                              ) : (
+                                <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                              )}
+                            </div>
+                          </div>
+                        </button>
+                        
+                        {/* Mobile: inline verifications accordion */}
+                        {isExpanded && (
+                          <div className="lg:hidden mt-2 ml-2 pl-3 border-l-2 border-primary/30 space-y-2 animate-in slide-in-from-top-2 duration-200">
+                            {selectedClient.canReport && (
+                              <Button variant="outline" size="sm" className="w-full text-red-600 border-red-200 hover:bg-red-50 mb-2">
+                                <Flag className="h-4 w-4 mr-2" />
+                                Signaler une fraude
+                              </Button>
+                            )}
+                            {verifications.length === 0 ? (
+                              <div className="text-center py-4 text-muted-foreground">
+                                <p className="text-xs">Aucune vérification pour ce bien</p>
+                              </div>
+                            ) : (
+                              verifications.map((verification) => {
+                                const config = statusConfig[verification.status];
+                                return (
+                                  <div
+                                    key={verification.id}
+                                    className="p-3 rounded-lg border border-border bg-card"
+                                  >
+                                    <div className="flex items-center gap-3">
+                                      <div className={`w-8 h-8 rounded-full flex items-center justify-center ${config.bg}`}>
+                                        <User className={`h-4 w-4 ${config.color}`} />
+                                      </div>
+                                      <div className="flex-1 min-w-0">
+                                        <div className="font-medium text-sm truncate">
+                                          {verification.guestFirstName} {verification.guestName}
+                                        </div>
+                                        <div className="flex items-center gap-1 text-xs text-muted-foreground mt-0.5">
+                                          <Calendar className="h-3 w-3" />
+                                          <span>{verification.checkIn} → {verification.checkOut}</span>
+                                        </div>
+                                      </div>
+                                      <Badge variant="secondary" className={`${config.bg} ${config.color} border-0 text-xs shrink-0`}>
+                                        {config.label}
+                                      </Badge>
+                                    </div>
+                                  </div>
+                                );
+                              })
+                            )}
+                          </div>
+                        )}
                       </div>
-                    </button>
-                  ))}
+                    );
+                  })}
                 </div>
               </CardContent>
             </Card>
           </div>
 
-          {/* Verifications list */}
-          <div className="lg:col-span-2">
+          {/* Verifications list - Desktop only */}
+          <div className="hidden lg:block lg:col-span-2">
             <Card>
               <CardHeader className="p-4 sm:p-6 pb-2 sm:pb-4">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
