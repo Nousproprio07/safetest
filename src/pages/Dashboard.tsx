@@ -27,7 +27,10 @@ import {
   Zap,
   ChevronLeft,
   Copy,
-  ExternalLink
+  ExternalLink,
+  AlertTriangle,
+  User,
+  Calendar
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -103,6 +106,74 @@ interface Property {
   verificationLink: string;
   createdAt: Date;
 }
+
+interface Verification {
+  id: string;
+  propertyId: string;
+  propertyName: string;
+  guestName: string;
+  guestFirstName: string;
+  checkIn: string;
+  checkOut: string;
+  status: "verified" | "pending" | "fraud_detected";
+  fraudReason?: string;
+}
+
+// Mock verifications with fraud detection
+const mockVerifications: Verification[] = [
+  { 
+    id: "v1", 
+    propertyId: "p1", 
+    propertyName: "Studio Marais",
+    guestName: "Durand", 
+    guestFirstName: "Thomas", 
+    checkIn: "2024-01-20", 
+    checkOut: "2024-01-25", 
+    status: "fraud_detected",
+    fraudReason: "Document d'identité falsifié détecté"
+  },
+  { 
+    id: "v2", 
+    propertyId: "p1", 
+    propertyName: "Studio Marais",
+    guestName: "Martin", 
+    guestFirstName: "Sophie", 
+    checkIn: "2024-01-15", 
+    checkOut: "2024-01-18", 
+    status: "verified" 
+  },
+  { 
+    id: "v3", 
+    propertyId: "p2", 
+    propertyName: "Appartement Bastille",
+    guestName: "Petit", 
+    guestFirstName: "Marc", 
+    checkIn: "2024-01-22", 
+    checkOut: "2024-01-28", 
+    status: "fraud_detected",
+    fraudReason: "Photos du logement trouvées sur d'autres annonces"
+  },
+  { 
+    id: "v4", 
+    propertyId: "p2", 
+    propertyName: "Appartement Bastille",
+    guestName: "Bernard", 
+    guestFirstName: "Julie", 
+    checkIn: "2024-01-10", 
+    checkOut: "2024-01-12", 
+    status: "verified" 
+  },
+  { 
+    id: "v5", 
+    propertyId: "p3", 
+    propertyName: "Loft Oberkampf",
+    guestName: "Laurent", 
+    guestFirstName: "Pierre", 
+    checkIn: "2024-01-08", 
+    checkOut: "2024-01-14", 
+    status: "pending" 
+  },
+];
 
 const Dashboard = () => {
   type VerificationStatus = "pending" | "in_progress" | "completed";
@@ -516,6 +587,61 @@ const Dashboard = () => {
             Complétez vos vérifications pour accéder à toutes les fonctionnalités.
           </p>
         </div>
+
+        {/* Fraud Alerts Section */}
+        {mockVerifications.filter(v => v.status === "fraud_detected").length > 0 && (
+          <Card className="mb-6 border-red-300 bg-red-50/80 shadow-lg animate-pulse-slow">
+            <CardHeader className="p-4 sm:p-6 pb-2 sm:pb-4">
+              <CardTitle className="flex items-center gap-2 text-base sm:text-lg text-red-700">
+                <AlertTriangle className="h-5 w-5 sm:h-6 sm:w-6 text-red-600" />
+                Alertes fraude détectées
+              </CardTitle>
+              <CardDescription className="text-xs sm:text-sm text-red-600">
+                Attention : des fraudes ont été détectées sur vos biens
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0">
+              <div className="space-y-3">
+                {mockVerifications
+                  .filter(v => v.status === "fraud_detected")
+                  .map((verification) => (
+                    <div
+                      key={verification.id}
+                      className="flex flex-col sm:flex-row sm:items-center gap-3 p-4 bg-white rounded-lg border border-red-200 shadow-sm"
+                    >
+                      <div className="flex items-center gap-3 flex-1">
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-red-100 flex items-center justify-center shrink-0">
+                          <AlertTriangle className="h-5 w-5 sm:h-6 sm:w-6 text-red-600" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <Badge variant="destructive" className="text-xs">
+                              <Home className="h-3 w-3 mr-1" />
+                              {verification.propertyName}
+                            </Badge>
+                            <Badge variant="outline" className="text-xs border-red-200 text-red-700">
+                              <User className="h-3 w-3 mr-1" />
+                              {verification.guestFirstName} {verification.guestName}
+                            </Badge>
+                          </div>
+                          <p className="text-xs sm:text-sm text-red-700 mt-1">
+                            {verification.fraudReason}
+                          </p>
+                          <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
+                            <Calendar className="h-3 w-3" />
+                            <span>{verification.checkIn} → {verification.checkOut}</span>
+                          </div>
+                        </div>
+                      </div>
+                      <Button size="sm" variant="destructive" className="w-full sm:w-auto">
+                        Voir détails
+                      </Button>
+                    </div>
+                  ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         <div className="grid lg:grid-cols-3 gap-4 sm:gap-8">
           {/* Main content */}
