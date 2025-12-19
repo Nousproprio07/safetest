@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
+import CreatePropertyDialog from "@/components/dashboard/CreatePropertyDialog";
 import { 
   Shield, 
   Mail, 
@@ -24,8 +25,11 @@ import {
   Check,
   Star,
   Zap,
-  ChevronLeft
+  ChevronLeft,
+  Copy,
+  ExternalLink
 } from "lucide-react";
+import { toast } from "sonner";
 
 // Verification step component
 const VerificationStep = ({ 
@@ -87,6 +91,19 @@ const VerificationStep = ({
   );
 };
 
+interface Property {
+  id: string;
+  name: string;
+  address: string;
+  city: string;
+  postalCode: string;
+  description: string;
+  photos: string[];
+  propertyCode: string;
+  verificationLink: string;
+  createdAt: Date;
+}
+
 const Dashboard = () => {
   type VerificationStatus = "pending" | "in_progress" | "completed";
   
@@ -109,6 +126,19 @@ const Dashboard = () => {
   const [hasPack, setHasPack] = useState(false);
   const [verificationCredits, setVerificationCredits] = useState(0);
   const [totalCredits, setTotalCredits] = useState(0);
+
+  // Properties state
+  const [properties, setProperties] = useState<Property[]>([]);
+  const [createPropertyOpen, setCreatePropertyOpen] = useState(false);
+
+  const handlePropertyCreated = (property: Property) => {
+    setProperties((prev) => [...prev, property]);
+  };
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    toast.success("Copié dans le presse-papiers");
+  };
 
   // Pack options from Tarifs page
   const packOptions = [
@@ -622,13 +652,18 @@ const Dashboard = () => {
                   <div>
                     <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
                       <Home className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
-                      Mes biens
+                      Mes biens ({properties.length})
                     </CardTitle>
                     <CardDescription className="text-xs sm:text-sm">
                       Gérez vos logements
                     </CardDescription>
                   </div>
-                  <Button disabled={!allVerified} size="sm" className="w-full sm:w-auto">
+                  <Button 
+                    disabled={!allVerified} 
+                    size="sm" 
+                    className="w-full sm:w-auto"
+                    onClick={() => setCreatePropertyOpen(true)}
+                  >
                     <Plus className="h-4 w-4 mr-2" />
                     Ajouter un bien
                   </Button>
@@ -640,14 +675,71 @@ const Dashboard = () => {
                     <Home className="h-10 w-10 sm:h-12 sm:w-12 mx-auto mb-3 sm:mb-4 opacity-50" />
                     <p className="text-xs sm:text-sm">Complétez vos vérifications (A+B+C+D) pour créer des biens</p>
                   </div>
-                ) : (
+                ) : properties.length === 0 ? (
                   <div className="text-center py-6 sm:py-8 text-muted-foreground">
                     <Home className="h-10 w-10 sm:h-12 sm:w-12 mx-auto mb-3 sm:mb-4 opacity-50" />
                     <p className="text-xs sm:text-sm">Aucun bien enregistré</p>
-                    <Button className="mt-3 sm:mt-4" size="sm">
+                    <Button 
+                      className="mt-3 sm:mt-4" 
+                      size="sm"
+                      onClick={() => setCreatePropertyOpen(true)}
+                    >
                       <Plus className="h-4 w-4 mr-2" />
                       Créer mon premier bien
                     </Button>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {properties.map((property) => (
+                      <div
+                        key={property.id}
+                        className="border border-border rounded-lg p-4 hover:shadow-md transition-shadow"
+                      >
+                        <div className="flex flex-col sm:flex-row gap-4">
+                          {/* Property photo */}
+                          {property.photos[0] && (
+                            <div className="w-full sm:w-24 h-32 sm:h-24 rounded-lg overflow-hidden shrink-0">
+                              <img
+                                src={property.photos[0]}
+                                alt={property.name}
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                          )}
+                          
+                          {/* Property info */}
+                          <div className="flex-1 min-w-0">
+                            <h4 className="font-semibold text-sm sm:text-base truncate">
+                              {property.name}
+                            </h4>
+                            <p className="text-xs sm:text-sm text-muted-foreground">
+                              {property.address}, {property.postalCode} {property.city}
+                            </p>
+                            
+                            {/* Property code and link */}
+                            <div className="mt-3 flex flex-wrap gap-2">
+                              <Badge variant="secondary" className="font-mono">
+                                {property.propertyCode}
+                                <button
+                                  onClick={() => copyToClipboard(property.propertyCode)}
+                                  className="ml-2 hover:text-primary"
+                                >
+                                  <Copy className="h-3 w-3" />
+                                </button>
+                              </Badge>
+                              <Badge 
+                                variant="outline" 
+                                className="cursor-pointer hover:bg-muted"
+                                onClick={() => copyToClipboard(property.verificationLink)}
+                              >
+                                <ExternalLink className="h-3 w-3 mr-1" />
+                                Lien de vérification
+                              </Badge>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 )}
               </CardContent>
@@ -746,6 +838,13 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
+
+      {/* Create Property Dialog */}
+      <CreatePropertyDialog
+        open={createPropertyOpen}
+        onOpenChange={setCreatePropertyOpen}
+        onPropertyCreated={handlePropertyCreated}
+      />
     </div>
   );
 };
