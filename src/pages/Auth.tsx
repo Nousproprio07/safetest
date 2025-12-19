@@ -5,8 +5,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Eye, EyeOff, Shield, ArrowLeft } from "lucide-react";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Eye, EyeOff, Shield, ArrowLeft, Home, Building2, User } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+
+type UserRole = "proprietaire" | "conciergerie" | "voyageur";
 
 const Auth = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -17,11 +20,35 @@ const Auth = () => {
   // Login form state
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
+  const [loginRole, setLoginRole] = useState<UserRole>("proprietaire");
 
   // Signup form state
   const [signupEmail, setSignupEmail] = useState("");
   const [signupPassword, setSignupPassword] = useState("");
   const [signupConfirmPassword, setSignupConfirmPassword] = useState("");
+  const [signupRole, setSignupRole] = useState<UserRole>("proprietaire");
+
+  const getRoleRedirect = (role: UserRole) => {
+    switch (role) {
+      case "conciergerie":
+        return "/conciergerie/dashboard";
+      case "voyageur":
+        return "/locataire/compte";
+      default:
+        return "/dashboard";
+    }
+  };
+
+  const getRoleLabel = (role: UserRole) => {
+    switch (role) {
+      case "conciergerie":
+        return "Conciergerie";
+      case "voyageur":
+        return "Voyageur";
+      default:
+        return "Propriétaire / Hôte";
+    }
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,11 +59,11 @@ const Auth = () => {
     
     toast({
       title: "Connexion réussie",
-      description: "Vérification IP effectuée. Bienvenue sur SafeVerify !",
+      description: `Bienvenue sur SafeVerify en tant que ${getRoleLabel(loginRole)} !`,
     });
     
     setIsLoading(false);
-    navigate("/dashboard");
+    navigate(getRoleRedirect(loginRole));
   };
 
   const handleSignup = async (e: React.FormEvent) => {
@@ -58,7 +85,7 @@ const Auth = () => {
     
     toast({
       title: "Inscription réussie",
-      description: "Un email de confirmation a été envoyé. Veuillez vérifier votre boîte mail.",
+      description: `Compte ${getRoleLabel(signupRole)} créé. Un email de confirmation a été envoyé.`,
     });
     
     setIsLoading(false);
@@ -84,7 +111,7 @@ const Auth = () => {
               <span className="text-2xl font-bold text-foreground">SafeVerify</span>
             </div>
             <p className="text-muted-foreground">
-              Espace propriétaire
+              Connexion à votre espace
             </p>
           </div>
 
@@ -101,6 +128,59 @@ const Auth = () => {
                 {/* Login Tab */}
                 <TabsContent value="login" className="mt-0">
                   <form onSubmit={handleLogin} className="space-y-4">
+                    {/* Role Selection */}
+                    <div className="space-y-3">
+                      <Label>Type de compte</Label>
+                      <RadioGroup
+                        value={loginRole}
+                        onValueChange={(value) => setLoginRole(value as UserRole)}
+                        className="grid grid-cols-3 gap-2"
+                      >
+                        <div>
+                          <RadioGroupItem
+                            value="proprietaire"
+                            id="login-proprietaire"
+                            className="peer sr-only"
+                          />
+                          <Label
+                            htmlFor="login-proprietaire"
+                            className="flex flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-3 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer"
+                          >
+                            <Home className="mb-1 h-5 w-5" />
+                            <span className="text-xs">Propriétaire</span>
+                          </Label>
+                        </div>
+                        <div>
+                          <RadioGroupItem
+                            value="conciergerie"
+                            id="login-conciergerie"
+                            className="peer sr-only"
+                          />
+                          <Label
+                            htmlFor="login-conciergerie"
+                            className="flex flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-3 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer"
+                          >
+                            <Building2 className="mb-1 h-5 w-5" />
+                            <span className="text-xs">Conciergerie</span>
+                          </Label>
+                        </div>
+                        <div>
+                          <RadioGroupItem
+                            value="voyageur"
+                            id="login-voyageur"
+                            className="peer sr-only"
+                          />
+                          <Label
+                            htmlFor="login-voyageur"
+                            className="flex flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-3 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer"
+                          >
+                            <User className="mb-1 h-5 w-5" />
+                            <span className="text-xs">Voyageur</span>
+                          </Label>
+                        </div>
+                      </RadioGroup>
+                    </div>
+
                     <div className="space-y-2">
                       <Label htmlFor="login-email">Email</Label>
                       <Input
@@ -159,6 +239,59 @@ const Auth = () => {
                 {/* Signup Tab */}
                 <TabsContent value="signup" className="mt-0">
                   <form onSubmit={handleSignup} className="space-y-4">
+                    {/* Role Selection */}
+                    <div className="space-y-3">
+                      <Label>Je suis un(e)</Label>
+                      <RadioGroup
+                        value={signupRole}
+                        onValueChange={(value) => setSignupRole(value as UserRole)}
+                        className="grid grid-cols-3 gap-2"
+                      >
+                        <div>
+                          <RadioGroupItem
+                            value="proprietaire"
+                            id="signup-proprietaire"
+                            className="peer sr-only"
+                          />
+                          <Label
+                            htmlFor="signup-proprietaire"
+                            className="flex flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-3 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer"
+                          >
+                            <Home className="mb-1 h-5 w-5" />
+                            <span className="text-xs">Propriétaire</span>
+                          </Label>
+                        </div>
+                        <div>
+                          <RadioGroupItem
+                            value="conciergerie"
+                            id="signup-conciergerie"
+                            className="peer sr-only"
+                          />
+                          <Label
+                            htmlFor="signup-conciergerie"
+                            className="flex flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-3 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer"
+                          >
+                            <Building2 className="mb-1 h-5 w-5" />
+                            <span className="text-xs">Conciergerie</span>
+                          </Label>
+                        </div>
+                        <div>
+                          <RadioGroupItem
+                            value="voyageur"
+                            id="signup-voyageur"
+                            className="peer sr-only"
+                          />
+                          <Label
+                            htmlFor="signup-voyageur"
+                            className="flex flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-3 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer"
+                          >
+                            <User className="mb-1 h-5 w-5" />
+                            <span className="text-xs">Voyageur</span>
+                          </Label>
+                        </div>
+                      </RadioGroup>
+                    </div>
+
                     <div className="space-y-2">
                       <Label htmlFor="signup-email">Email</Label>
                       <Input
