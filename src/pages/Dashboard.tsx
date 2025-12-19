@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -20,7 +20,11 @@ import {
   LogOut,
   ChevronRight,
   Menu,
-  X
+  X,
+  Check,
+  Star,
+  Zap,
+  ChevronLeft
 } from "lucide-react";
 
 // Verification step component
@@ -91,6 +95,7 @@ const Dashboard = () => {
   // Mock state for new user - starts with no pack selected
   const [hasSelectedPack, setHasSelectedPack] = useState(false);
   const [selectedPackName, setSelectedPackName] = useState<string | null>(null);
+  const [selectedPackPrice, setSelectedPackPrice] = useState<string | null>(null);
   
   // Mock state for verification steps
   const [verificationSteps, setVerificationSteps] = useState<Record<string, VerificationStatus>>({
@@ -105,17 +110,100 @@ const Dashboard = () => {
   const [verificationCredits, setVerificationCredits] = useState(0);
   const [totalCredits, setTotalCredits] = useState(0);
 
-  // Pack options for selection
+  // Pack options from Tarifs page
   const packOptions = [
-    { id: "starter", name: "Starter", price: "30€", credits: 5, description: "Idéal pour débuter" },
-    { id: "standard", name: "Standard", price: "50€", credits: 15, description: "Le plus populaire", popular: true },
-    { id: "premium", name: "Premium", price: "90€", credits: 30, description: "Pour les professionnels" },
+    { 
+      id: "essentiel", 
+      name: "Essentiel", 
+      price: "49", 
+      credits: 10, 
+      pricePerVerif: "4,90€",
+      properties: "1 logement",
+      validity: "12 mois",
+      description: "Pour les propriétaires occasionnels",
+      icon: Shield,
+      features: [
+        "10 vérifications incluses",
+        "1 logement",
+        "Score de confiance détaillé",
+        "Vérification d'identité",
+        "Support par email",
+      ]
+    },
+    { 
+      id: "pro", 
+      name: "Pro", 
+      price: "130", 
+      credits: 30, 
+      pricePerVerif: "4,33€",
+      properties: "2 logements",
+      validity: "12 mois",
+      description: "Le plus populaire pour les hôtes réguliers",
+      icon: Star,
+      popular: true,
+      features: [
+        "30 vérifications incluses",
+        "Jusqu'à 2 logements",
+        "Score de confiance détaillé",
+        "Vérification d'identité avancée",
+        "Support dédié",
+      ]
+    },
+    { 
+      id: "premium", 
+      name: "Premium", 
+      price: "205", 
+      credits: 50, 
+      pricePerVerif: "4,10€",
+      properties: "4 logements",
+      validity: "24 mois",
+      description: "Pour les professionnels de la location",
+      icon: Zap,
+      features: [
+        "50 vérifications incluses",
+        "Jusqu'à 4 logements",
+        "Score de confiance détaillé",
+        "Tableau de bord analytics",
+        "Support dédié prioritaire",
+      ]
+    },
   ];
+
+  // Mobile scroll handling
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
+
+  const checkScrollButtons = () => {
+    if (scrollRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
+      setCanScrollLeft(scrollLeft > 0);
+      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10);
+    }
+  };
+
+  useEffect(() => {
+    if (!hasSelectedPack) {
+      checkScrollButtons();
+    }
+  }, [hasSelectedPack]);
+
+  const scroll = (direction: "left" | "right") => {
+    if (scrollRef.current) {
+      const scrollAmount = 320;
+      scrollRef.current.scrollBy({
+        left: direction === "left" ? -scrollAmount : scrollAmount,
+        behavior: "smooth",
+      });
+      setTimeout(checkScrollButtons, 300);
+    }
+  };
 
   const handleSelectPack = (packId: string) => {
     const pack = packOptions.find(p => p.id === packId);
     if (pack) {
       setSelectedPackName(pack.name);
+      setSelectedPackPrice(pack.price);
       setHasSelectedPack(true);
       setHasPack(true);
       setVerificationCredits(pack.credits);
@@ -197,9 +285,9 @@ const Dashboard = () => {
 
       {/* Pack Selection Overlay - shown when no pack selected */}
       {!hasSelectedPack && (
-        <div className="fixed inset-0 z-40 bg-background/80 backdrop-blur-sm">
-          <div className="container mx-auto px-4 py-8 sm:py-16">
-            <div className="max-w-4xl mx-auto">
+        <div className="fixed inset-0 z-40 bg-background/95 backdrop-blur-sm overflow-y-auto">
+          <div className="container mx-auto px-4 py-8 sm:py-12">
+            <div className="max-w-5xl mx-auto">
               <div className="text-center mb-8 sm:mb-12">
                 <div className="w-16 h-16 sm:w-20 sm:h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
                   <Package className="h-8 w-8 sm:h-10 sm:w-10 text-primary" />
@@ -211,46 +299,175 @@ const Dashboard = () => {
                 </p>
               </div>
 
-              <div className="grid sm:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
-                {packOptions.map((pack) => (
-                  <Card 
-                    key={pack.id}
-                    className={`relative cursor-pointer transition-all hover:shadow-lg hover:scale-[1.02] ${
-                      pack.popular ? "border-primary ring-2 ring-primary/20" : ""
-                    }`}
-                    onClick={() => handleSelectPack(pack.id)}
+              {/* Mobile: Horizontal scroll with arrows */}
+              <div className="sm:hidden relative mb-6">
+                <div
+                  ref={scrollRef}
+                  onScroll={checkScrollButtons}
+                  className="flex gap-4 overflow-x-auto scrollbar-hide pb-4 snap-x snap-mandatory px-4"
+                  style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+                >
+                  {packOptions.map((pack) => {
+                    const IconComponent = pack.icon;
+                    return (
+                      <div
+                        key={pack.id}
+                        className={`relative flex-shrink-0 w-[300px] rounded-2xl p-6 snap-center cursor-pointer transition-all ${
+                          pack.popular
+                            ? "bg-gradient-primary text-primary-foreground"
+                            : "bg-card border border-border shadow-card"
+                        }`}
+                        onClick={() => handleSelectPack(pack.id)}
+                      >
+                        {pack.popular && (
+                          <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 bg-accent text-accent-foreground text-sm font-semibold rounded-full">
+                            Le plus populaire
+                          </div>
+                        )}
+
+                        <div
+                          className={`w-12 h-12 rounded-xl flex items-center justify-center mb-6 ${
+                            pack.popular ? "bg-primary-foreground/10" : "bg-gradient-primary"
+                          }`}
+                        >
+                          <IconComponent className="w-6 h-6 text-primary-foreground" />
+                        </div>
+
+                        <h3 className={`text-xl font-bold mb-2 ${pack.popular ? "text-primary-foreground" : "text-foreground"}`}>
+                          {pack.name}
+                        </h3>
+                        <p className={`text-sm mb-6 ${pack.popular ? "text-primary-foreground/80" : "text-muted-foreground"}`}>
+                          {pack.description}
+                        </p>
+
+                        <div className="mb-6">
+                          <span className={`text-4xl font-bold ${pack.popular ? "text-primary-foreground" : "text-foreground"}`}>
+                            {pack.price}€
+                          </span>
+                          <p className={`text-sm mt-1 ${pack.popular ? "text-primary-foreground/70" : "text-muted-foreground"}`}>
+                            {pack.credits} vérifications • {pack.pricePerVerif}/vérif
+                          </p>
+                        </div>
+
+                        <ul className="space-y-3 mb-8">
+                          {pack.features.map((feature) => (
+                            <li key={feature} className="flex items-start gap-3">
+                              <Check className={`w-5 h-5 flex-shrink-0 mt-0.5 ${pack.popular ? "text-accent" : "text-accent"}`} />
+                              <span className={`text-sm ${pack.popular ? "text-primary-foreground/90" : "text-foreground"}`}>
+                                {feature}
+                              </span>
+                            </li>
+                          ))}
+                        </ul>
+
+                        <Button
+                          className={`w-full ${pack.popular ? "bg-primary-foreground text-primary hover:bg-primary-foreground/90" : ""}`}
+                          variant={pack.popular ? "default" : "hero"}
+                          size="lg"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleSelectPack(pack.id);
+                          }}
+                        >
+                          Choisir {pack.name}
+                        </Button>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Navigation Arrows */}
+                <div className="flex justify-center gap-4 mt-4">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => scroll("left")}
+                    disabled={!canScrollLeft}
+                    className="rounded-full"
                   >
-                    {pack.popular && (
-                      <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                        <Badge className="bg-primary text-primary-foreground">
+                    <ChevronLeft className="w-5 h-5" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => scroll("right")}
+                    disabled={!canScrollRight}
+                    className="rounded-full"
+                  >
+                    <ChevronRight className="w-5 h-5" />
+                  </Button>
+                </div>
+              </div>
+
+              {/* Desktop: Grid layout */}
+              <div className="hidden sm:grid sm:grid-cols-3 gap-6 mb-8">
+                {packOptions.map((pack) => {
+                  const IconComponent = pack.icon;
+                  return (
+                    <div
+                      key={pack.id}
+                      className={`relative rounded-2xl p-6 cursor-pointer transition-all hover:shadow-lg hover:scale-[1.02] ${
+                        pack.popular
+                          ? "bg-gradient-primary text-primary-foreground"
+                          : "bg-card border border-border shadow-card"
+                      }`}
+                      onClick={() => handleSelectPack(pack.id)}
+                    >
+                      {pack.popular && (
+                        <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 bg-accent text-accent-foreground text-sm font-semibold rounded-full">
                           Le plus populaire
-                        </Badge>
+                        </div>
+                      )}
+
+                      <div
+                        className={`w-12 h-12 rounded-xl flex items-center justify-center mb-6 ${
+                          pack.popular ? "bg-primary-foreground/10" : "bg-gradient-primary"
+                        }`}
+                      >
+                        <IconComponent className="w-6 h-6 text-primary-foreground" />
                       </div>
-                    )}
-                    <CardHeader className="p-4 sm:p-6 text-center">
-                      <CardTitle className="text-lg sm:text-xl">{pack.name}</CardTitle>
-                      <CardDescription className="text-xs sm:text-sm">{pack.description}</CardDescription>
-                    </CardHeader>
-                    <CardContent className="p-4 sm:p-6 pt-0 text-center">
-                      <div className="mb-4">
-                        <span className="text-3xl sm:text-4xl font-bold">{pack.price}</span>
+
+                      <h3 className={`text-xl font-bold mb-2 ${pack.popular ? "text-primary-foreground" : "text-foreground"}`}>
+                        {pack.name}
+                      </h3>
+                      <p className={`text-sm mb-6 ${pack.popular ? "text-primary-foreground/80" : "text-muted-foreground"}`}>
+                        {pack.description}
+                      </p>
+
+                      <div className="mb-6">
+                        <span className={`text-4xl font-bold ${pack.popular ? "text-primary-foreground" : "text-foreground"}`}>
+                          {pack.price}€
+                        </span>
+                        <p className={`text-sm mt-1 ${pack.popular ? "text-primary-foreground/70" : "text-muted-foreground"}`}>
+                          {pack.credits} vérifications • {pack.pricePerVerif}/vérif
+                        </p>
                       </div>
-                      <div className="text-sm sm:text-base text-muted-foreground mb-4">
-                        <span className="font-semibold text-foreground">{pack.credits}</span> vérifications
-                      </div>
-                      <Button 
-                        className="w-full" 
-                        variant={pack.popular ? "default" : "outline"}
+
+                      <ul className="space-y-3 mb-8">
+                        {pack.features.map((feature) => (
+                          <li key={feature} className="flex items-start gap-3">
+                            <Check className={`w-5 h-5 flex-shrink-0 mt-0.5 ${pack.popular ? "text-accent" : "text-accent"}`} />
+                            <span className={`text-sm ${pack.popular ? "text-primary-foreground/90" : "text-foreground"}`}>
+                              {feature}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+
+                      <Button
+                        className={`w-full ${pack.popular ? "bg-primary-foreground text-primary hover:bg-primary-foreground/90" : ""}`}
+                        variant={pack.popular ? "default" : "hero"}
+                        size="lg"
                         onClick={(e) => {
                           e.stopPropagation();
                           handleSelectPack(pack.id);
                         }}
                       >
-                        Choisir ce pack
+                        Choisir {pack.name}
                       </Button>
-                    </CardContent>
-                  </Card>
-                ))}
+                    </div>
+                  );
+                })}
               </div>
 
               <p className="text-center text-xs sm:text-sm text-muted-foreground">
@@ -302,7 +519,7 @@ const Dashboard = () => {
                       <Package className="h-6 w-6 sm:h-8 sm:w-8 text-primary shrink-0" />
                       <div>
                         <h3 className="font-semibold text-sm sm:text-base">Pack {selectedPackName || "actif"}</h3>
-                        <p className="text-xs sm:text-sm text-muted-foreground">{totalCredits} vérifications</p>
+                        <p className="text-xs sm:text-sm text-muted-foreground">{totalCredits} vérifications - {selectedPackPrice}€</p>
                       </div>
                     </div>
                     <div className="flex gap-2 flex-wrap">
