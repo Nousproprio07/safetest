@@ -1,5 +1,5 @@
-import { Shield, UserCheck, CreditCard, Zap, ChevronLeft, ChevronRight } from "lucide-react";
-import { useRef, useState, useEffect } from "react";
+import { Shield, UserCheck, CreditCard, Zap, Building2, ChevronLeft, ChevronRight } from "lucide-react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 
 const features = [
@@ -12,6 +12,11 @@ const features = [
     icon: Shield,
     title: "Score de confiance",
     description: "Un indicateur clair pour évaluer la fiabilité de chaque locataire.",
+  },
+  {
+    icon: Building2,
+    title: "Compatible Conciergerie",
+    description: "Solution pensée pour les propriétaires et conciergeries avec gestion multi-biens.",
   },
   {
     icon: CreditCard,
@@ -29,6 +34,7 @@ const Features = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   const checkScrollButtons = () => {
     if (scrollRef.current) {
@@ -37,6 +43,28 @@ const Features = () => {
       setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10);
     }
   };
+
+  // Auto-scroll effect
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (scrollRef.current) {
+        const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
+        const isAtEnd = scrollLeft >= scrollWidth - clientWidth - 10;
+        
+        if (isAtEnd) {
+          scrollRef.current.scrollTo({ left: 0, behavior: "smooth" });
+          setCurrentIndex(0);
+        } else {
+          const scrollAmount = 280;
+          scrollRef.current.scrollBy({ left: scrollAmount, behavior: "smooth" });
+          setCurrentIndex((prev) => (prev + 1) % features.length);
+        }
+        setTimeout(checkScrollButtons, 300);
+      }
+    }, 4000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     checkScrollButtons();
@@ -70,42 +98,21 @@ const Features = () => {
           </p>
         </div>
 
-        {/* Desktop: Grid 4 columns */}
-        <div className="hidden md:grid md:grid-cols-4 gap-6">
-          {features.map((feature, index) => (
-            <div
-              key={feature.title}
-              className="group p-6 rounded-2xl bg-card border border-border shadow-card hover:shadow-card-hover transition-all duration-300 animate-fade-up"
-              style={{ animationDelay: `${index * 100}ms` }}
-            >
-              <div className="w-12 h-12 rounded-xl bg-gradient-primary flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300">
-                <feature.icon className="w-6 h-6 text-primary-foreground" />
-              </div>
-              <h3 className="text-lg font-semibold text-foreground mb-3">
-                {feature.title}
-              </h3>
-              <p className="text-muted-foreground leading-relaxed text-sm">
-                {feature.description}
-              </p>
-            </div>
-          ))}
-        </div>
-
-        {/* Mobile: Horizontal scroll with arrows */}
-        <div className="md:hidden relative">
+        {/* Carousel for both Desktop and Mobile */}
+        <div className="relative">
           <div
             ref={scrollRef}
             onScroll={checkScrollButtons}
-            className="flex gap-4 overflow-x-auto scrollbar-hide pb-4 snap-x snap-mandatory"
+            className="flex gap-4 md:gap-6 overflow-x-auto scrollbar-hide pb-4 snap-x snap-mandatory"
             style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
           >
             {features.map((feature, index) => (
               <div
                 key={feature.title}
-                className="group flex-shrink-0 w-[260px] p-6 rounded-2xl bg-card border border-border shadow-card snap-center"
+                className="group flex-shrink-0 w-[260px] md:w-[280px] lg:w-[300px] p-6 rounded-2xl bg-card border border-border shadow-card hover:shadow-card-hover transition-all duration-300 snap-center"
                 style={{ animationDelay: `${index * 100}ms` }}
               >
-                <div className="w-12 h-12 rounded-xl bg-gradient-primary flex items-center justify-center mb-5">
+                <div className="w-12 h-12 rounded-xl bg-gradient-primary flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-300">
                   <feature.icon className="w-6 h-6 text-primary-foreground" />
                 </div>
                 <h3 className="text-lg font-semibold text-foreground mb-3">
@@ -119,7 +126,7 @@ const Features = () => {
           </div>
 
           {/* Navigation Arrows */}
-          <div className="flex justify-center gap-4 mt-4">
+          <div className="flex justify-center gap-4 mt-6">
             <Button
               variant="outline"
               size="icon"
@@ -129,6 +136,19 @@ const Features = () => {
             >
               <ChevronLeft className="w-5 h-5" />
             </Button>
+            
+            {/* Dot indicators */}
+            <div className="flex items-center gap-2">
+              {features.map((_, index) => (
+                <div
+                  key={index}
+                  className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                    index === currentIndex ? "bg-primary w-4" : "bg-muted-foreground/30"
+                  }`}
+                />
+              ))}
+            </div>
+            
             <Button
               variant="outline"
               size="icon"
