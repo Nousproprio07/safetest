@@ -6,51 +6,51 @@ import { Shield, Check, ArrowLeft, Zap, Star, Crown } from "lucide-react";
 
 const packs = [
   {
-    id: "starter",
-    name: "Starter",
-    price: 29,
-    credits: 5,
-    pricePerCredit: "5,80€",
+    id: "essentiel",
+    name: "Essentiel",
+    price: 90,
+    credits: 20,
+    pricePerCredit: "4,50€",
     icon: Zap,
     popular: false,
     features: [
-      "5 vérifications locataires",
+      "20 vérifications locataires",
       "Rapport de confiance détaillé",
-      "Support email",
-      "Validité 6 mois"
+      "Support dédié 24/7",
+      "Validité 24 mois",
+      "Notifications Fraudes incluses"
     ]
   },
   {
     id: "standard",
     name: "Standard",
-    price: 50,
-    credits: 15,
-    pricePerCredit: "3,33€",
+    price: 130,
+    credits: 30,
+    pricePerCredit: "4,33€",
     icon: Star,
     popular: true,
-    features: [
-      "15 vérifications locataires",
-      "Rapport de confiance détaillé",
-      "Support prioritaire",
-      "Validité 12 mois",
-      "Alertes SMS incluses"
-    ]
-  },
-  {
-    id: "premium",
-    name: "Premium",
-    price: 89,
-    credits: 30,
-    pricePerCredit: "2,97€",
-    icon: Crown,
-    popular: false,
     features: [
       "30 vérifications locataires",
       "Rapport de confiance détaillé",
       "Support dédié 24/7",
       "Validité 24 mois",
-      "Alertes SMS incluses",
-      "API access"
+      "Notifications Fraudes incluses"
+    ]
+  },
+  {
+    id: "premium",
+    name: "Premium",
+    price: 205,
+    credits: 50,
+    pricePerCredit: "4,10€",
+    icon: Crown,
+    popular: false,
+    features: [
+      "50 vérifications locataires",
+      "Rapport de confiance détaillé",
+      "Support dédié 24/7",
+      "Validité 24 mois",
+      "Notifications Fraudes incluses"
     ]
   }
 ];
