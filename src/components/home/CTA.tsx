@@ -26,13 +26,15 @@ const CTA = () => {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button
-                size="xl"
-                className="bg-primary-foreground text-primary hover:bg-primary-foreground/90 shadow-lg"
-              >
-                Créer mon compte
-                <ArrowRight className="w-5 h-5" />
-              </Button>
+              <Link to="/auth">
+                <Button
+                  size="xl"
+                  className="bg-primary-foreground text-primary hover:bg-primary-foreground/90 shadow-lg"
+                >
+                  Créer mon compte
+                  <ArrowRight className="w-5 h-5" />
+                </Button>
+              </Link>
               <Link to="/tarifs">
                 <Button
                   variant="outline"
