@@ -9,7 +9,7 @@ const currentUserPack = "Essentiel";
 
 // Prix par vérification selon le pack de l'utilisateur
 const pricePerVerifByPack: Record<string, number> = {
-  "Essentiel": 4.50,
+  "Essentiel": 4.90,
   "Pro": 4.33,
   "Premium": 4.10,
 };

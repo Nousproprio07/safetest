@@ -9,6 +9,7 @@ import APropos from "./pages/APropos";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import RechargerCredits from "./pages/RechargerCredits";
+import ChangerPack from "./pages/ChangerPack";
 import Abonnement from "./pages/Abonnement";
 import NotFound from "./pages/NotFound";
 
@@ -27,7 +28,7 @@ const App = () => (
           <Route path="/auth" element={<Auth />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/recharger-credits" element={<RechargerCredits />} />
-          <Route path="/changer-pack" element={<Tarifs />} />
+          <Route path="/changer-pack" element={<ChangerPack />} />
           <Route path="/abonnement" element={<Abonnement />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

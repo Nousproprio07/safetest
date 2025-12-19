@@ -2,7 +2,6 @@ import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Check, Star, Shield, Zap, ChevronLeft, ChevronRight, X } from "lucide-react";
 import { useRef, useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
 import {
   Table,
   TableBody,
@@ -11,9 +10,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
-// Simuler le pack actuel de l'utilisateur (à remplacer par les vraies données)
-const currentUserPack = "Essentiel";
 
 const pricingPlans = [
   {
@@ -105,9 +101,6 @@ const Tarifs = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
-  const location = useLocation();
-  
-  const isChangerPackPage = location.pathname === "/changer-pack";
 
   const checkScrollButtons = () => {
     if (scrollRef.current) {
@@ -145,38 +138,16 @@ const Tarifs = () => {
     return <span className="font-medium">{value}</span>;
   };
 
-  const getButtonText = (planName: string) => {
-    if (!isChangerPackPage) {
-      return `Choisir ${planName}`;
-    }
-    if (planName === currentUserPack) {
-      return "Pack actuel";
-    }
-    return "Passer à ce pack";
-  };
-
-  const isCurrentPack = (planName: string) => {
-    return isChangerPackPage && planName === currentUserPack;
-  };
-
   return (
     <Layout>
       {/* Header */}
       <section className="py-16 md:py-24 bg-gradient-hero">
         <div className="container mx-auto text-center">
           <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4 animate-fade-up">
-            {isChangerPackPage ? (
-              <>Changer de <span className="text-gradient-primary">pack</span></>
-            ) : (
-              <>Des tarifs <span className="text-gradient-primary">transparents</span></>
-            )}
+            Des tarifs <span className="text-gradient-primary">transparents</span>
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto animate-fade-up animation-delay-100">
-            {isChangerPackPage ? (
-              <>Votre pack actuel : <strong className="text-primary">{currentUserPack}</strong>. Passez à un pack supérieur pour plus de fonctionnalités.</>
-            ) : (
-              <>Choisissez le pack adapté à vos besoins. Seuls les propriétaires paient, jamais les locataires. Déductible en frais réels.</>
-            )}
+            Choisissez le pack adapté à vos besoins. Seuls les propriétaires paient, jamais les locataires. Déductible en frais réels.
           </p>
         </div>
       </section>
@@ -196,19 +167,12 @@ const Tarifs = () => {
                 <div
                   key={plan.name}
                   className={`relative flex-shrink-0 w-[300px] rounded-2xl p-6 snap-center ${
-                    isCurrentPack(plan.name)
-                      ? "bg-card border-2 border-primary shadow-card"
-                      : plan.popular
+                    plan.popular
                       ? "bg-gradient-primary text-primary-foreground"
                       : "bg-card border border-border shadow-card"
                   }`}
                 >
-                  {isCurrentPack(plan.name) && (
-                    <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 bg-primary text-primary-foreground text-sm font-semibold rounded-full">
-                      Pack actuel
-                    </div>
-                  )}
-                  {!isCurrentPack(plan.name) && plan.popular && (
+                  {plan.popular && (
                     <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 bg-accent text-accent-foreground text-sm font-semibold rounded-full">
                       Le plus populaire
                     </div>
@@ -216,24 +180,24 @@ const Tarifs = () => {
 
                   <div
                     className={`w-12 h-12 rounded-xl flex items-center justify-center mb-6 ${
-                      plan.popular && !isCurrentPack(plan.name) ? "bg-primary-foreground/10" : "bg-gradient-primary"
+                      plan.popular ? "bg-primary-foreground/10" : "bg-gradient-primary"
                     }`}
                   >
                     <plan.icon className="w-6 h-6 text-primary-foreground" />
                   </div>
 
-                  <h3 className={`text-xl font-bold mb-2 ${plan.popular && !isCurrentPack(plan.name) ? "text-primary-foreground" : "text-foreground"}`}>
+                  <h3 className={`text-xl font-bold mb-2 ${plan.popular ? "text-primary-foreground" : "text-foreground"}`}>
                     {plan.name}
                   </h3>
-                  <p className={`text-sm mb-6 ${plan.popular && !isCurrentPack(plan.name) ? "text-primary-foreground/80" : "text-muted-foreground"}`}>
+                  <p className={`text-sm mb-6 ${plan.popular ? "text-primary-foreground/80" : "text-muted-foreground"}`}>
                     {plan.description}
                   </p>
 
                   <div className="mb-6">
-                    <span className={`text-4xl font-bold ${plan.popular && !isCurrentPack(plan.name) ? "text-primary-foreground" : "text-foreground"}`}>
+                    <span className={`text-4xl font-bold ${plan.popular ? "text-primary-foreground" : "text-foreground"}`}>
                       {plan.price}€
                     </span>
-                    <p className={`text-sm mt-1 ${plan.popular && !isCurrentPack(plan.name) ? "text-primary-foreground/70" : "text-muted-foreground"}`}>
+                    <p className={`text-sm mt-1 ${plan.popular ? "text-primary-foreground/70" : "text-muted-foreground"}`}>
                       {plan.verifications} vérifications • {plan.pricePerVerif}/vérif
                     </p>
                   </div>
@@ -241,8 +205,8 @@ const Tarifs = () => {
                   <ul className="space-y-3 mb-8">
                     {plan.features.map((feature) => (
                       <li key={feature} className="flex items-start gap-3">
-                        <Check className={`w-5 h-5 flex-shrink-0 mt-0.5 ${plan.popular && !isCurrentPack(plan.name) ? "text-accent" : "text-accent"}`} />
-                        <span className={`text-sm ${plan.popular && !isCurrentPack(plan.name) ? "text-primary-foreground/90" : "text-foreground"}`}>
+                        <Check className={`w-5 h-5 flex-shrink-0 mt-0.5 ${plan.popular ? "text-accent" : "text-accent"}`} />
+                        <span className={`text-sm ${plan.popular ? "text-primary-foreground/90" : "text-foreground"}`}>
                           {feature}
                         </span>
                       </li>
@@ -250,12 +214,11 @@ const Tarifs = () => {
                   </ul>
 
                   <Button
-                    className={`w-full ${plan.popular && !isCurrentPack(plan.name) ? "bg-primary-foreground text-primary hover:bg-primary-foreground/90" : ""}`}
-                    variant={isCurrentPack(plan.name) ? "outline" : plan.popular ? "default" : "hero"}
+                    className={`w-full ${plan.popular ? "bg-primary-foreground text-primary hover:bg-primary-foreground/90" : ""}`}
+                    variant={plan.popular ? "default" : "hero"}
                     size="lg"
-                    disabled={isCurrentPack(plan.name)}
                   >
-                    {getButtonText(plan.name)}
+                    Choisir {plan.name}
                   </Button>
                 </div>
               ))}
@@ -291,35 +254,25 @@ const Tarifs = () => {
                 <TableHeader>
                   <TableRow className="bg-muted/50">
                     <TableHead className="w-[280px] font-semibold text-foreground">Fonctionnalités</TableHead>
-                    <TableHead className={`text-center font-semibold text-foreground ${isCurrentPack("Essentiel") ? "bg-primary/10 border-x border-primary/20" : ""}`}>
+                    <TableHead className="text-center font-semibold text-foreground">
                       <div className="flex flex-col items-center gap-1">
                         <Shield className="w-5 h-5 text-primary" />
                         <span>Essentiel</span>
-                        {isCurrentPack("Essentiel") && (
-                          <span className="text-xs text-primary font-medium">Pack actuel</span>
-                        )}
                         <span className="text-2xl font-bold text-primary">49€</span>
                       </div>
                     </TableHead>
-                    <TableHead className={`text-center font-semibold text-foreground ${isCurrentPack("Pro") ? "bg-primary/10 border-x border-primary/20" : !isChangerPackPage ? "bg-primary/10 border-x border-primary/20" : ""}`}>
+                    <TableHead className="text-center font-semibold text-foreground bg-primary/10 border-x border-primary/20">
                       <div className="flex flex-col items-center gap-1">
                         <Star className="w-5 h-5 text-primary" />
                         <span>Pro</span>
-                        {isCurrentPack("Pro") ? (
-                          <span className="text-xs text-primary font-medium">Pack actuel</span>
-                        ) : !isChangerPackPage && (
-                          <span className="text-xs text-primary font-medium">Le plus populaire</span>
-                        )}
+                        <span className="text-xs text-primary font-medium">Le plus populaire</span>
                         <span className="text-2xl font-bold text-primary">130€</span>
                       </div>
                     </TableHead>
-                    <TableHead className={`text-center font-semibold text-foreground ${isCurrentPack("Premium") ? "bg-primary/10 border-x border-primary/20" : ""}`}>
+                    <TableHead className="text-center font-semibold text-foreground">
                       <div className="flex flex-col items-center gap-1">
                         <Zap className="w-5 h-5 text-primary" />
                         <span>Premium</span>
-                        {isCurrentPack("Premium") && (
-                          <span className="text-xs text-primary font-medium">Pack actuel</span>
-                        )}
                         <span className="text-2xl font-bold text-primary">205€</span>
                       </div>
                     </TableHead>
@@ -329,44 +282,41 @@ const Tarifs = () => {
                   {comparisonFeatures.map((feature, index) => (
                     <TableRow key={feature.name} className={index % 2 === 0 ? "bg-background" : "bg-muted/30"}>
                       <TableCell className="font-medium text-foreground">{feature.name}</TableCell>
-                      <TableCell className={`text-center ${isCurrentPack("Essentiel") ? "bg-primary/5 border-x border-primary/10" : ""}`}>
+                      <TableCell className="text-center">
                         {renderFeatureValue(feature.essentiel)}
                       </TableCell>
-                      <TableCell className={`text-center ${isCurrentPack("Pro") ? "bg-primary/5 border-x border-primary/10" : !isChangerPackPage ? "bg-primary/5 border-x border-primary/10" : ""}`}>
+                      <TableCell className="text-center bg-primary/5 border-x border-primary/10">
                         {renderFeatureValue(feature.pro)}
                       </TableCell>
-                      <TableCell className={`text-center ${isCurrentPack("Premium") ? "bg-primary/5 border-x border-primary/10" : ""}`}>
+                      <TableCell className="text-center">
                         {renderFeatureValue(feature.premium)}
                       </TableCell>
                     </TableRow>
                   ))}
                   <TableRow>
                     <TableCell></TableCell>
-                    <TableCell className={`text-center py-6 ${isCurrentPack("Essentiel") ? "bg-primary/5 border-x border-primary/10" : ""}`}>
+                    <TableCell className="text-center py-6">
                       <Button 
-                        variant={isCurrentPack("Essentiel") ? "outline" : "outline-primary"} 
+                        variant="outline-primary" 
                         className="w-full max-w-[160px]"
-                        disabled={isCurrentPack("Essentiel")}
                       >
-                        {getButtonText("Essentiel")}
+                        Choisir Essentiel
                       </Button>
                     </TableCell>
-                    <TableCell className={`text-center py-6 ${isCurrentPack("Pro") ? "bg-primary/5 border-x border-primary/10" : !isChangerPackPage ? "bg-primary/5 border-x border-primary/10" : ""}`}>
+                    <TableCell className="text-center py-6 bg-primary/5 border-x border-primary/10">
                       <Button 
-                        variant={isCurrentPack("Pro") ? "outline" : "hero"} 
+                        variant="hero" 
                         className="w-full max-w-[160px]"
-                        disabled={isCurrentPack("Pro")}
                       >
-                        {getButtonText("Pro")}
+                        Choisir Pro
                       </Button>
                     </TableCell>
-                    <TableCell className={`text-center py-6 ${isCurrentPack("Premium") ? "bg-primary/5 border-x border-primary/10" : ""}`}>
+                    <TableCell className="text-center py-6">
                       <Button 
-                        variant={isCurrentPack("Premium") ? "outline" : "outline-primary"} 
+                        variant="outline-primary" 
                         className="w-full max-w-[160px]"
-                        disabled={isCurrentPack("Premium")}
                       >
-                        {getButtonText("Premium")}
+                        Choisir Premium
                       </Button>
                     </TableCell>
                   </TableRow>
@@ -376,17 +326,15 @@ const Tarifs = () => {
           </div>
 
           {/* Additional Info */}
-          {!isChangerPackPage && (
-            <div className="mt-16 text-center max-w-2xl mx-auto">
-              <p className="text-muted-foreground">
-                <strong className="text-foreground">Besoin d'un volume plus important ?</strong>
-                {" "}Contactez-nous pour un tarif personnalisé adapté à vos besoins.
-              </p>
-              <Button variant="outline-primary" className="mt-4">
-                Nous contacter
-              </Button>
-            </div>
-          )}
+          <div className="mt-16 text-center max-w-2xl mx-auto">
+            <p className="text-muted-foreground">
+              <strong className="text-foreground">Besoin d'un volume plus important ?</strong>
+              {" "}Contactez-nous pour un tarif personnalisé adapté à vos besoins.
+            </p>
+            <Button variant="outline-primary" className="mt-4">
+              Nous contacter
+            </Button>
+          </div>
         </div>
       </section>
 
