@@ -34,6 +34,35 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
+// Fraud report interface
+interface FraudReport {
+  verificationId: string;
+  reportedBy: string;
+  reporterType: "proprietaire" | "conciergerie";
+  reportedAt: string;
+  guestName: string;
+  propertyName: string;
+}
+
+// Get reported frauds from localStorage
+const getReportedFrauds = (): FraudReport[] => {
+  const stored = localStorage.getItem("safeverify_fraud_reports");
+  return stored ? JSON.parse(stored) : [];
+};
+
+// Save reported fraud to localStorage
+const saveReportedFraud = (report: FraudReport) => {
+  const reports = getReportedFrauds();
+  reports.push(report);
+  localStorage.setItem("safeverify_fraud_reports", JSON.stringify(reports));
+};
+
+// Check if fraud already reported
+const isAlreadyReported = (verificationId: string): FraudReport | null => {
+  const reports = getReportedFrauds();
+  return reports.find(r => r.verificationId === verificationId) || null;
+};
+
 // Verification step component
 const VerificationStep = ({ 
   step, 
@@ -179,6 +208,8 @@ const Dashboard = () => {
   type VerificationStatus = "pending" | "in_progress" | "completed";
   
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [reportKey, setReportKey] = useState(0);
+  const forceRerender = () => setReportKey(k => k + 1);
   
   // Mock state for new user - starts with no pack selected
   const [hasSelectedPack, setHasSelectedPack] = useState(false);
@@ -609,26 +640,51 @@ const Dashboard = () => {
               <div className="space-y-2">
                 {mockVerifications
                   .filter(v => v.status === "fraud_detected")
-                  .map((verification) => (
-                    <div
-                      key={verification.id}
-                      className="flex items-center justify-between p-3 bg-white rounded-lg border border-red-300"
-                    >
-                      <div className="flex items-center gap-3">
-                        <AlertTriangle className="h-5 w-5 text-red-500 shrink-0" />
-                        <div>
-                          <span className="font-semibold text-foreground">{verification.propertyName}</span>
-                          <span className="text-muted-foreground mx-2">•</span>
-                          <span className="text-red-700 font-medium">
-                            {verification.guestFirstName} {verification.guestName}
-                          </span>
+                  .map((verification) => {
+                    const existingReport = isAlreadyReported(verification.id);
+                    const handleReport = () => {
+                      saveReportedFraud({
+                        verificationId: verification.id,
+                        reportedBy: "Vous (Propriétaire)",
+                        reporterType: "proprietaire",
+                        reportedAt: new Date().toISOString(),
+                        guestName: `${verification.guestFirstName} ${verification.guestName}`,
+                        propertyName: verification.propertyName
+                      });
+                      toast.success("Fraude signalée", {
+                        description: `Le voyageur ${verification.guestFirstName} ${verification.guestName} a été signalé et enregistré dans notre système.`
+                      });
+                      // Force re-render
+                      forceRerender();
+                    };
+                    
+                    return (
+                      <div
+                        key={verification.id}
+                        className="flex items-center justify-between p-3 bg-white rounded-lg border border-red-300"
+                      >
+                        <div className="flex items-center gap-3">
+                          <AlertTriangle className="h-5 w-5 text-red-500 shrink-0" />
+                          <div>
+                            <span className="font-semibold text-foreground">{verification.propertyName}</span>
+                            <span className="text-muted-foreground mx-2">•</span>
+                            <span className="text-red-700 font-medium">
+                              {verification.guestFirstName} {verification.guestName}
+                            </span>
+                          </div>
                         </div>
+                        {existingReport ? (
+                          <Badge variant="secondary" className="bg-green-100 text-green-700">
+                            ✓ Signalé par {existingReport.reporterType === "conciergerie" ? "la conciergerie" : existingReport.reportedBy}
+                          </Badge>
+                        ) : (
+                          <Button size="sm" variant="destructive" onClick={handleReport}>
+                            Signaler
+                          </Button>
+                        )}
                       </div>
-                      <Button size="sm" variant="destructive">
-                        Signaler
-                      </Button>
-                    </div>
-                  ))}
+                    );
+                  })}
               </div>
             </CardContent>
           </Card>
