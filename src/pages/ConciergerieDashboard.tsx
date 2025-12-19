@@ -18,7 +18,8 @@ import {
   User,
   Flag,
   Building2,
-  ChevronUp
+  ChevronUp,
+  AlertTriangle
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -64,25 +65,26 @@ const mockProperties: Record<string, Array<{
   ],
 };
 
-// Mock verifications per property
+// Mock verifications per property with fraud detection
 const mockVerifications: Record<string, Array<{
   id: string;
   guestName: string;
   guestFirstName: string;
   checkIn: string;
   checkOut: string;
-  status: "verified" | "pending" | "failed";
+  status: "verified" | "pending" | "fraud_detected";
+  fraudReason?: string;
 }>> = {
   "p1": [
     { id: "v1", guestName: "Smith", guestFirstName: "John", checkIn: "2024-01-15", checkOut: "2024-01-20", status: "verified" },
-    { id: "v2", guestName: "Johnson", guestFirstName: "Emily", checkIn: "2024-01-22", checkOut: "2024-01-25", status: "verified" },
+    { id: "v2", guestName: "Johnson", guestFirstName: "Emily", checkIn: "2024-01-22", checkOut: "2024-01-25", status: "fraud_detected", fraudReason: "Document d'identité falsifié" },
   ],
   "p2": [
     { id: "v3", guestName: "Williams", guestFirstName: "Michael", checkIn: "2024-01-10", checkOut: "2024-01-14", status: "verified" },
     { id: "v4", guestName: "Brown", guestFirstName: "Sarah", checkIn: "2024-01-16", checkOut: "2024-01-19", status: "pending" },
   ],
   "p3": [
-    { id: "v5", guestName: "Davis", guestFirstName: "Robert", checkIn: "2024-01-08", checkOut: "2024-01-12", status: "failed" },
+    { id: "v5", guestName: "Davis", guestFirstName: "Robert", checkIn: "2024-01-08", checkOut: "2024-01-12", status: "fraud_detected", fraudReason: "Photos trouvées sur d'autres annonces" },
   ],
   "p4": [
     { id: "v6", guestName: "Garcia", guestFirstName: "Maria", checkIn: "2024-01-20", checkOut: "2024-01-27", status: "verified" },
@@ -105,8 +107,16 @@ const ConciergerieDashboard = () => {
   const statusConfig = {
     verified: { color: "text-green-600", bg: "bg-green-100", label: "Vérifié" },
     pending: { color: "text-yellow-600", bg: "bg-yellow-100", label: "En attente" },
-    failed: { color: "text-red-600", bg: "bg-red-100", label: "Échoué" },
+    fraud_detected: { color: "text-red-600", bg: "bg-red-100", label: "Fraude détectée" },
   };
+
+  // Get all fraud alerts across all properties for this client
+  const fraudAlerts = clientProperties.flatMap(property => {
+    const verifications = mockVerifications[property.id] || [];
+    return verifications
+      .filter(v => v.status === "fraud_detected")
+      .map(v => ({ ...v, propertyName: property.name, propertyId: property.id }));
+  });
 
   return (
     <div className="min-h-screen bg-background">
@@ -219,6 +229,62 @@ const ConciergerieDashboard = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* Fraud Alerts Section for Concierge */}
+        {fraudAlerts.length > 0 && (
+          <Card className="mb-6 border-red-300 bg-red-50/80 shadow-lg">
+            <CardHeader className="p-4 sm:p-6 pb-2 sm:pb-4">
+              <CardTitle className="flex items-center gap-2 text-base sm:text-lg text-red-700">
+                <AlertTriangle className="h-5 w-5 sm:h-6 sm:w-6 text-red-600 animate-pulse" />
+                Alertes fraude - {selectedClient.name}
+              </CardTitle>
+              <CardDescription className="text-xs sm:text-sm text-red-600">
+                {fraudAlerts.length} fraude(s) détectée(s) sur les biens de ce client
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0">
+              <div className="space-y-3">
+                {fraudAlerts.map((alert) => (
+                  <div
+                    key={alert.id}
+                    className="flex flex-col sm:flex-row sm:items-center gap-3 p-4 bg-white rounded-lg border border-red-200 shadow-sm"
+                  >
+                    <div className="flex items-center gap-3 flex-1">
+                      <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-red-100 flex items-center justify-center shrink-0">
+                        <AlertTriangle className="h-5 w-5 sm:h-6 sm:w-6 text-red-600" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <Badge variant="destructive" className="text-xs">
+                            <Home className="h-3 w-3 mr-1" />
+                            {alert.propertyName}
+                          </Badge>
+                          <Badge variant="outline" className="text-xs border-red-200 text-red-700">
+                            <User className="h-3 w-3 mr-1" />
+                            {alert.guestFirstName} {alert.guestName}
+                          </Badge>
+                        </div>
+                        <p className="text-xs sm:text-sm text-red-700 mt-1 font-medium">
+                          {alert.fraudReason}
+                        </p>
+                        <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
+                          <Calendar className="h-3 w-3" />
+                          <span>{alert.checkIn} → {alert.checkOut}</span>
+                        </div>
+                      </div>
+                    </div>
+                    {selectedClient.canReport && (
+                      <Button size="sm" variant="destructive" className="w-full sm:w-auto">
+                        <Flag className="h-4 w-4 mr-2" />
+                        Signaler
+                      </Button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         <div className="grid lg:grid-cols-3 gap-4 sm:gap-8">
           {/* Properties list */}
