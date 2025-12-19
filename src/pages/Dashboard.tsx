@@ -588,8 +588,8 @@ const Dashboard = () => {
           </p>
         </div>
 
-        {/* Fraud Alerts Section - Simple and visible */}
-        {mockVerifications.filter(v => v.status === "fraud_detected").length > 0 && (
+        {/* Fraud Alerts Section - Only visible after verification complete and property added */}
+        {allVerified && properties.length > 0 && mockVerifications.filter(v => v.status === "fraud_detected").length > 0 && (
           <Card className="mb-6 border-2 border-red-500 bg-red-50 shadow-xl">
             <CardContent className="p-4 sm:p-6">
               <div className="flex items-center gap-3 mb-4">
