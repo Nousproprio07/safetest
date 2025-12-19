@@ -12,6 +12,13 @@ import RechargerCredits from "./pages/RechargerCredits";
 import ChangerPack from "./pages/ChangerPack";
 import Abonnement from "./pages/Abonnement";
 import NotFound from "./pages/NotFound";
+// Conciergerie pages
+import ConciergerieAuth from "./pages/ConciergerieAuth";
+import ConciergerieDashboard from "./pages/ConciergerieDashboard";
+// Locataire pages
+import LocataireVerification from "./pages/LocataireVerification";
+import LocataireCompte from "./pages/LocataireCompte";
+import LocataireGererDonnees from "./pages/LocataireGererDonnees";
 
 const queryClient = new QueryClient();
 
@@ -30,6 +37,13 @@ const App = () => (
           <Route path="/recharger-credits" element={<RechargerCredits />} />
           <Route path="/changer-pack" element={<ChangerPack />} />
           <Route path="/abonnement" element={<Abonnement />} />
+          {/* Conciergerie routes */}
+          <Route path="/conciergerie/auth" element={<ConciergerieAuth />} />
+          <Route path="/conciergerie/dashboard" element={<ConciergerieDashboard />} />
+          {/* Locataire routes */}
+          <Route path="/verification" element={<LocataireVerification />} />
+          <Route path="/locataire/compte" element={<LocataireCompte />} />
+          <Route path="/locataire/gerer-donnees" element={<LocataireGererDonnees />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
