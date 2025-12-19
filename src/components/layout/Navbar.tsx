@@ -48,8 +48,8 @@ const Navbar = () => {
 
           {/* Desktop CTA */}
           <div className="hidden md:block">
-            <Button variant="hero" size="default">
-              Se connecter
+            <Button variant="hero" size="default" asChild>
+              <Link to="/auth">Se connecter</Link>
             </Button>
           </div>
 
@@ -86,8 +86,8 @@ const Navbar = () => {
                 </Link>
               ))}
               <div className="px-4 pt-4">
-                <Button variant="hero" size="lg" className="w-full">
-                  Se connecter
+                <Button variant="hero" size="lg" className="w-full" asChild>
+                  <Link to="/auth" onClick={() => setIsOpen(false)}>Se connecter</Link>
                 </Button>
               </div>
             </div>
