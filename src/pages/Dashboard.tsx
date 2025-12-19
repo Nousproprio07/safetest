@@ -88,18 +88,40 @@ const Dashboard = () => {
   
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   
+  // Mock state for new user - starts with no pack selected
+  const [hasSelectedPack, setHasSelectedPack] = useState(false);
+  const [selectedPackName, setSelectedPackName] = useState<string | null>(null);
+  
   // Mock state for verification steps
   const [verificationSteps, setVerificationSteps] = useState<Record<string, VerificationStatus>>({
-    email: "completed",
-    phone: "completed",
-    kyc: "in_progress",
+    email: "pending",
+    phone: "pending",
+    kyc: "pending",
     bank: "pending",
   });
 
   // Mock state for pack
-  const [hasPack, setHasPack] = useState(true);
-  const [verificationCredits, setVerificationCredits] = useState(12);
-  const [totalCredits, setTotalCredits] = useState(15);
+  const [hasPack, setHasPack] = useState(false);
+  const [verificationCredits, setVerificationCredits] = useState(0);
+  const [totalCredits, setTotalCredits] = useState(0);
+
+  // Pack options for selection
+  const packOptions = [
+    { id: "starter", name: "Starter", price: "30€", credits: 5, description: "Idéal pour débuter" },
+    { id: "standard", name: "Standard", price: "50€", credits: 15, description: "Le plus populaire", popular: true },
+    { id: "premium", name: "Premium", price: "90€", credits: 30, description: "Pour les professionnels" },
+  ];
+
+  const handleSelectPack = (packId: string) => {
+    const pack = packOptions.find(p => p.id === packId);
+    if (pack) {
+      setSelectedPackName(pack.name);
+      setHasSelectedPack(true);
+      setHasPack(true);
+      setVerificationCredits(pack.credits);
+      setTotalCredits(pack.credits);
+    }
+  };
 
   // Calculate progress
   const completedSteps = Object.values(verificationSteps).filter(s => s === "completed").length;
@@ -173,7 +195,73 @@ const Dashboard = () => {
         )}
       </header>
 
-      <div className="container mx-auto px-4 py-4 sm:py-8">
+      {/* Pack Selection Overlay - shown when no pack selected */}
+      {!hasSelectedPack && (
+        <div className="fixed inset-0 z-40 bg-background/80 backdrop-blur-sm">
+          <div className="container mx-auto px-4 py-8 sm:py-16">
+            <div className="max-w-4xl mx-auto">
+              <div className="text-center mb-8 sm:mb-12">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
+                  <Package className="h-8 w-8 sm:h-10 sm:w-10 text-primary" />
+                </div>
+                <h1 className="text-2xl sm:text-4xl font-bold mb-3 sm:mb-4">Bienvenue sur SafeVerify !</h1>
+                <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto">
+                  Pour accéder à votre Dashboard et commencer à vérifier vos voyageurs, 
+                  choisissez le pack qui correspond à vos besoins.
+                </p>
+              </div>
+
+              <div className="grid sm:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
+                {packOptions.map((pack) => (
+                  <Card 
+                    key={pack.id}
+                    className={`relative cursor-pointer transition-all hover:shadow-lg hover:scale-[1.02] ${
+                      pack.popular ? "border-primary ring-2 ring-primary/20" : ""
+                    }`}
+                    onClick={() => handleSelectPack(pack.id)}
+                  >
+                    {pack.popular && (
+                      <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                        <Badge className="bg-primary text-primary-foreground">
+                          Le plus populaire
+                        </Badge>
+                      </div>
+                    )}
+                    <CardHeader className="p-4 sm:p-6 text-center">
+                      <CardTitle className="text-lg sm:text-xl">{pack.name}</CardTitle>
+                      <CardDescription className="text-xs sm:text-sm">{pack.description}</CardDescription>
+                    </CardHeader>
+                    <CardContent className="p-4 sm:p-6 pt-0 text-center">
+                      <div className="mb-4">
+                        <span className="text-3xl sm:text-4xl font-bold">{pack.price}</span>
+                      </div>
+                      <div className="text-sm sm:text-base text-muted-foreground mb-4">
+                        <span className="font-semibold text-foreground">{pack.credits}</span> vérifications
+                      </div>
+                      <Button 
+                        className="w-full" 
+                        variant={pack.popular ? "default" : "outline"}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleSelectPack(pack.id);
+                        }}
+                      >
+                        Choisir ce pack
+                      </Button>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+
+              <p className="text-center text-xs sm:text-sm text-muted-foreground">
+                Vous pourrez changer de pack à tout moment depuis votre Dashboard.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className={`container mx-auto px-4 py-4 sm:py-8 ${!hasSelectedPack ? "blur-sm pointer-events-none" : ""}`}>
         {/* Welcome section */}
         <div className="mb-6 sm:mb-8">
           <h1 className="text-xl sm:text-3xl font-bold mb-1 sm:mb-2">Bienvenue, Propriétaire</h1>
@@ -213,8 +301,8 @@ const Dashboard = () => {
                     <div className="flex items-center gap-3">
                       <Package className="h-6 w-6 sm:h-8 sm:w-8 text-primary shrink-0" />
                       <div>
-                        <h3 className="font-semibold text-sm sm:text-base">Pack actif</h3>
-                        <p className="text-xs sm:text-sm text-muted-foreground">15 vérifications - 50€</p>
+                        <h3 className="font-semibold text-sm sm:text-base">Pack {selectedPackName || "actif"}</h3>
+                        <p className="text-xs sm:text-sm text-muted-foreground">{totalCredits} vérifications</p>
                       </div>
                     </div>
                     <div className="flex gap-2 flex-wrap">
