@@ -217,9 +217,14 @@ const Dashboard = () => {
                         <p className="text-xs sm:text-sm text-muted-foreground">15 vérifications - 50€</p>
                       </div>
                     </div>
-                    <Button variant="outline" size="sm" asChild>
-                      <Link to="/packs">Recharger</Link>
-                    </Button>
+                    <div className="flex gap-2 flex-wrap">
+                      <Button variant="outline" size="sm" asChild>
+                        <Link to="/recharger-credits">Recharger</Link>
+                      </Button>
+                      <Button variant="outline" size="sm" asChild>
+                        <Link to="/changer-pack">Changer de pack</Link>
+                      </Button>
+                    </div>
                   </div>
                   <div className="space-y-2">
                     <div className="flex justify-between text-xs sm:text-sm">
@@ -412,8 +417,14 @@ const Dashboard = () => {
               </CardHeader>
               <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0 space-y-1 sm:space-y-2">
                 <Button variant="ghost" className="w-full justify-between text-xs sm:text-sm h-9 sm:h-10" asChild>
-                  <Link to="/abonnement">
-                    Gérer mon abonnement
+                  <Link to="/changer-pack">
+                    Changer de pack
+                    <ChevronRight className="h-4 w-4" />
+                  </Link>
+                </Button>
+                <Button variant="ghost" className="w-full justify-between text-xs sm:text-sm h-9 sm:h-10" asChild>
+                  <Link to="/recharger-credits">
+                    Recharger mes crédits
                     <ChevronRight className="h-4 w-4" />
                   </Link>
                 </Button>

@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Shield, Check, ArrowLeft, Zap, Star, Crown } from "lucide-react";
 
-const packs = [
+const creditPacks = [
   {
     id: "essentiel",
     name: "Essentiel",
@@ -13,13 +13,6 @@ const packs = [
     pricePerCredit: "4,50€",
     icon: Zap,
     popular: false,
-    features: [
-      "20 vérifications locataires",
-      "Rapport de confiance détaillé",
-      "Support dédié 24/7",
-      "Validité 24 mois",
-      "Notifications Fraudes incluses"
-    ]
   },
   {
     id: "standard",
@@ -29,13 +22,6 @@ const packs = [
     pricePerCredit: "4,33€",
     icon: Star,
     popular: true,
-    features: [
-      "30 vérifications locataires",
-      "Rapport de confiance détaillé",
-      "Support dédié 24/7",
-      "Validité 24 mois",
-      "Notifications Fraudes incluses"
-    ]
   },
   {
     id: "premium",
@@ -45,20 +31,12 @@ const packs = [
     pricePerCredit: "4,10€",
     icon: Crown,
     popular: false,
-    features: [
-      "50 vérifications locataires",
-      "Rapport de confiance détaillé",
-      "Support dédié 24/7",
-      "Validité 24 mois",
-      "Notifications Fraudes incluses"
-    ]
   }
 ];
 
-const Packs = () => {
+const RechargerCredits = () => {
   const handleSelectPack = (packId: string) => {
-    // Simulated - would redirect to Stripe Checkout
-    console.log("Pack sélectionné:", packId);
+    console.log("Pack crédit sélectionné:", packId);
   };
 
   return (
@@ -83,15 +61,15 @@ const Packs = () => {
       <div className="container mx-auto px-4 py-6 sm:py-8">
         {/* Title */}
         <div className="text-center mb-8 sm:mb-12">
-          <h1 className="text-2xl sm:text-3xl font-bold mb-2">Choisissez votre pack</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold mb-2">Recharger mes crédits</h1>
           <p className="text-muted-foreground text-sm sm:text-base max-w-md mx-auto">
-            Achetez des crédits de vérification pour sécuriser vos locations
+            Achetez des crédits de vérification supplémentaires
           </p>
         </div>
 
-        {/* Packs grid */}
+        {/* Credit packs grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 max-w-5xl mx-auto">
-          {packs.map((pack) => (
+          {creditPacks.map((pack) => (
             <Card 
               key={pack.id} 
               className={`relative flex flex-col ${pack.popular ? "border-primary shadow-lg scale-[1.02]" : ""}`}
@@ -119,12 +97,22 @@ const Packs = () => {
                 </div>
                 
                 <ul className="space-y-2 mb-6 flex-1">
-                  {pack.features.map((feature, idx) => (
-                    <li key={idx} className="flex items-start gap-2 text-sm">
-                      <Check className="h-4 w-4 text-green-500 mt-0.5 shrink-0" />
-                      <span>{feature}</span>
-                    </li>
-                  ))}
+                  <li className="flex items-start gap-2 text-sm">
+                    <Check className="h-4 w-4 text-green-500 mt-0.5 shrink-0" />
+                    <span>{pack.credits} vérifications locataires</span>
+                  </li>
+                  <li className="flex items-start gap-2 text-sm">
+                    <Check className="h-4 w-4 text-green-500 mt-0.5 shrink-0" />
+                    <span>Rapport de confiance détaillé</span>
+                  </li>
+                  <li className="flex items-start gap-2 text-sm">
+                    <Check className="h-4 w-4 text-green-500 mt-0.5 shrink-0" />
+                    <span>Notifications Fraudes incluses</span>
+                  </li>
+                  <li className="flex items-start gap-2 text-sm">
+                    <Check className="h-4 w-4 text-green-500 mt-0.5 shrink-0" />
+                    <span>Crédits cumulables</span>
+                  </li>
                 </ul>
 
                 <Button 
@@ -132,14 +120,14 @@ const Packs = () => {
                   variant={pack.popular ? "default" : "outline"}
                   onClick={() => handleSelectPack(pack.id)}
                 >
-                  Choisir ce pack
+                  Acheter ce pack
                 </Button>
               </CardContent>
             </Card>
           ))}
         </div>
 
-        {/* FAQ */}
+        {/* Info */}
         <div className="mt-12 sm:mt-16 max-w-2xl mx-auto">
           <h2 className="text-xl font-semibold text-center mb-6">Questions fréquentes</h2>
           <div className="space-y-4">
@@ -153,17 +141,9 @@ const Packs = () => {
             </Card>
             <Card>
               <CardContent className="p-4">
-                <h3 className="font-medium mb-1">Les crédits expirent-ils ?</h3>
-                <p className="text-sm text-muted-foreground">
-                  Oui, chaque pack a une durée de validité indiquée. Vos crédits restent utilisables pendant toute cette période.
-                </p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="p-4">
                 <h3 className="font-medium mb-1">Puis-je cumuler plusieurs packs ?</h3>
                 <p className="text-sm text-muted-foreground">
-                  Oui ! Si vous achetez un nouveau pack, les crédits s'ajoutent à votre solde existant.
+                  Oui ! Si vous achetez un nouveau pack de crédits, ils s'ajoutent à votre solde existant.
                 </p>
               </CardContent>
             </Card>
@@ -174,4 +154,4 @@ const Packs = () => {
   );
 };
 
-export default Packs;
+export default RechargerCredits;
