@@ -4,37 +4,53 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Shield, Check, ArrowLeft, Zap, Star, Crown } from "lucide-react";
 
-const creditPacks = [
-  {
-    id: "essentiel",
-    name: "Essentiel",
-    price: 90,
-    credits: 20,
-    pricePerCredit: "4,50€",
-    icon: Zap,
-    popular: false,
-  },
-  {
-    id: "standard",
-    name: "Standard",
-    price: 130,
-    credits: 30,
-    pricePerCredit: "4,33€",
-    icon: Star,
-    popular: true,
-  },
-  {
-    id: "premium",
-    name: "Premium",
-    price: 205,
-    credits: 50,
-    pricePerCredit: "4,10€",
-    icon: Crown,
-    popular: false,
-  }
-];
+// Simuler le pack actuel de l'utilisateur (à remplacer par les vraies données)
+const currentUserPack = "Essentiel";
+
+// Prix par vérification selon le pack de l'utilisateur
+const pricePerVerifByPack: Record<string, number> = {
+  "Essentiel": 4.50,
+  "Pro": 4.33,
+  "Premium": 4.10,
+};
+
+const getCreditPacks = (userPack: string) => {
+  const pricePerVerif = pricePerVerifByPack[userPack] || 4.50;
+  
+  return [
+    {
+      id: "recharge-20",
+      name: "20 vérifications",
+      price: Math.round(20 * pricePerVerif),
+      credits: 20,
+      pricePerCredit: `${pricePerVerif.toFixed(2).replace('.', ',')}€`,
+      icon: Zap,
+      popular: false,
+    },
+    {
+      id: "recharge-30",
+      name: "30 vérifications",
+      price: Math.round(30 * pricePerVerif),
+      credits: 30,
+      pricePerCredit: `${pricePerVerif.toFixed(2).replace('.', ',')}€`,
+      icon: Star,
+      popular: true,
+    },
+    {
+      id: "recharge-50",
+      name: "50 vérifications",
+      price: Math.round(50 * pricePerVerif),
+      credits: 50,
+      pricePerCredit: `${pricePerVerif.toFixed(2).replace('.', ',')}€`,
+      icon: Crown,
+      popular: false,
+    }
+  ];
+};
 
 const RechargerCredits = () => {
+  const creditPacks = getCreditPacks(currentUserPack);
+  
   const handleSelectPack = (packId: string) => {
     console.log("Pack crédit sélectionné:", packId);
   };
@@ -63,7 +79,7 @@ const RechargerCredits = () => {
         <div className="text-center mb-8 sm:mb-12">
           <h1 className="text-2xl sm:text-3xl font-bold mb-2">Recharger mes crédits</h1>
           <p className="text-muted-foreground text-sm sm:text-base max-w-md mx-auto">
-            Achetez des crédits de vérification supplémentaires
+            Pack actuel : <strong className="text-primary">{currentUserPack}</strong> • Prix par vérification : {pricePerVerifByPack[currentUserPack].toFixed(2).replace('.', ',')}€
           </p>
         </div>
 
