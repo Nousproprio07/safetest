@@ -21,6 +21,36 @@ import {
   ChevronUp,
   AlertTriangle
 } from "lucide-react";
+import { toast } from "sonner";
+
+// Fraud report interface
+interface FraudReport {
+  verificationId: string;
+  reportedBy: string;
+  reporterType: "proprietaire" | "conciergerie";
+  reportedAt: string;
+  guestName: string;
+  propertyName: string;
+}
+
+// Get reported frauds from localStorage
+const getReportedFrauds = (): FraudReport[] => {
+  const stored = localStorage.getItem("safeverify_fraud_reports");
+  return stored ? JSON.parse(stored) : [];
+};
+
+// Save reported fraud to localStorage
+const saveReportedFraud = (report: FraudReport) => {
+  const reports = getReportedFrauds();
+  reports.push(report);
+  localStorage.setItem("safeverify_fraud_reports", JSON.stringify(reports));
+};
+
+// Check if fraud already reported
+const isAlreadyReported = (verificationId: string): FraudReport | null => {
+  const reports = getReportedFrauds();
+  return reports.find(r => r.verificationId === verificationId) || null;
+};
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -99,6 +129,8 @@ const ConciergerieDashboard = () => {
   const [selectedClient, setSelectedClient] = useState(mockClients[0]);
   const [selectedProperty, setSelectedProperty] = useState<string | null>(null);
   const [expandedPropertyMobile, setExpandedPropertyMobile] = useState<string | null>(null);
+  const [reportKey, setReportKey] = useState(0);
+  const forceRerender = () => setReportKey(k => k + 1);
 
   const clientProperties = mockProperties[selectedClient.id] || [];
   const selectedPropertyData = clientProperties.find(p => p.id === selectedProperty);
@@ -249,27 +281,50 @@ const ConciergerieDashboard = () => {
               </div>
               
               <div className="space-y-2">
-                {fraudAlerts.map((alert) => (
-                  <div
-                    key={alert.id}
-                    className="flex items-center justify-between p-3 bg-white rounded-lg border border-red-300"
-                  >
-                    <div className="flex items-center gap-3">
-                      <AlertTriangle className="h-5 w-5 text-red-500 shrink-0" />
-                      <div>
-                        <span className="font-semibold text-primary">{selectedClient.name}</span>
-                        <span className="text-muted-foreground mx-2">•</span>
-                        <span className="text-red-700 font-medium">{alert.propertyName}</span>
+                {fraudAlerts.map((alert) => {
+                  const existingReport = isAlreadyReported(alert.id);
+                  const handleReport = () => {
+                    saveReportedFraud({
+                      verificationId: alert.id,
+                      reportedBy: selectedClient.name,
+                      reporterType: "conciergerie",
+                      reportedAt: new Date().toISOString(),
+                      guestName: `${alert.guestFirstName} ${alert.guestName}`,
+                      propertyName: alert.propertyName
+                    });
+                    toast.success("Fraude signalée", {
+                      description: `Le voyageur ${alert.guestFirstName} ${alert.guestName} a été signalé et enregistré dans notre système.`
+                    });
+                    // Force re-render
+                    forceRerender();
+                  };
+                  
+                  return (
+                    <div
+                      key={alert.id}
+                      className="flex items-center justify-between p-3 bg-white rounded-lg border border-red-300"
+                    >
+                      <div className="flex items-center gap-3">
+                        <AlertTriangle className="h-5 w-5 text-red-500 shrink-0" />
+                        <div>
+                          <span className="font-semibold text-primary">{selectedClient.name}</span>
+                          <span className="text-muted-foreground mx-2">•</span>
+                          <span className="text-red-700 font-medium">{alert.propertyName}</span>
+                        </div>
                       </div>
+                      {existingReport ? (
+                        <Badge variant="secondary" className="bg-green-100 text-green-700">
+                          ✓ Signalé par {existingReport.reporterType === "proprietaire" ? "le propriétaire" : existingReport.reportedBy}
+                        </Badge>
+                      ) : selectedClient.canReport ? (
+                        <Button size="sm" variant="destructive" onClick={handleReport}>
+                          <Flag className="h-4 w-4 mr-1" />
+                          Signaler
+                        </Button>
+                      ) : null}
                     </div>
-                    {selectedClient.canReport && (
-                      <Button size="sm" variant="destructive">
-                        <Flag className="h-4 w-4 mr-1" />
-                        Signaler
-                      </Button>
-                    )}
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </CardContent>
           </Card>
