@@ -18,7 +18,9 @@ import {
   Package,
   Settings,
   LogOut,
-  ChevronRight
+  ChevronRight,
+  Menu,
+  X
 } from "lucide-react";
 
 // Verification step component
@@ -48,29 +50,33 @@ const VerificationStep = ({
   return (
     <Card className={`relative overflow-hidden transition-all hover:shadow-md ${status === "completed" ? "border-green-200" : ""}`}>
       <div className={`absolute top-0 left-0 w-1 h-full ${status === "completed" ? "bg-green-500" : status === "in_progress" ? "bg-yellow-500" : "bg-muted"}`} />
-      <CardContent className="p-4 pl-6">
-        <div className="flex items-center gap-4">
-          <div className={`w-12 h-12 rounded-full flex items-center justify-center ${config.bg}`}>
-            <Icon className={`h-6 w-6 ${config.color}`} />
-          </div>
-          <div className="flex-1">
-            <div className="flex items-center gap-2 mb-1">
-              <span className="font-bold text-primary">{step}</span>
-              <h4 className="font-semibold">{title}</h4>
-              <Badge variant={status === "completed" ? "default" : "secondary"} className="ml-auto">
-                {config.badge}
-              </Badge>
+      <CardContent className="p-3 sm:p-4 pl-4 sm:pl-6">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+          <div className="flex items-center gap-3 sm:gap-4">
+            <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center shrink-0 ${config.bg}`}>
+              <Icon className={`h-5 w-5 sm:h-6 sm:w-6 ${config.color}`} />
             </div>
-            <p className="text-sm text-muted-foreground">{description}</p>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-1 flex-wrap">
+                <span className="font-bold text-primary text-sm">{step}</span>
+                <h4 className="font-semibold text-sm sm:text-base">{title}</h4>
+                <Badge variant={status === "completed" ? "default" : "secondary"} className="text-xs">
+                  {config.badge}
+                </Badge>
+              </div>
+              <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2">{description}</p>
+            </div>
           </div>
-          {status !== "completed" && (
-            <Button size="sm" onClick={onStart} disabled={status === "in_progress"}>
-              {status === "in_progress" ? "En cours..." : "Démarrer"}
-            </Button>
-          )}
-          {status === "completed" && (
-            <CheckCircle2 className="h-6 w-6 text-green-500" />
-          )}
+          <div className="flex justify-end sm:ml-auto shrink-0">
+            {status !== "completed" && (
+              <Button size="sm" onClick={onStart} disabled={status === "in_progress"} className="text-xs sm:text-sm">
+                {status === "in_progress" ? "En cours..." : "Démarrer"}
+              </Button>
+            )}
+            {status === "completed" && (
+              <CheckCircle2 className="h-5 w-5 sm:h-6 sm:w-6 text-green-500" />
+            )}
+          </div>
         </div>
       </CardContent>
     </Card>
@@ -79,6 +85,8 @@ const VerificationStep = ({
 
 const Dashboard = () => {
   type VerificationStatus = "pending" | "in_progress" | "completed";
+  
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   
   // Mock state for verification steps
   const [verificationSteps, setVerificationSteps] = useState<Record<string, VerificationStatus>>({
@@ -116,13 +124,15 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="border-b border-border bg-card">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+      <header className="border-b border-border bg-card sticky top-0 z-50">
+        <div className="container mx-auto px-4 py-3 sm:py-4 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
-            <Shield className="h-8 w-8 text-primary" />
-            <span className="text-xl font-bold">SafeVerify</span>
+            <Shield className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
+            <span className="text-lg sm:text-xl font-bold">SafeVerify</span>
           </Link>
-          <div className="flex items-center gap-4">
+          
+          {/* Desktop menu */}
+          <div className="hidden sm:flex items-center gap-2 sm:gap-4">
             <Button variant="ghost" size="sm">
               <Settings className="h-4 w-4 mr-2" />
               Paramètres
@@ -134,57 +144,85 @@ const Dashboard = () => {
               </Link>
             </Button>
           </div>
+          
+          {/* Mobile menu button */}
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="sm:hidden"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          >
+            {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </Button>
         </div>
+        
+        {/* Mobile menu */}
+        {mobileMenuOpen && (
+          <div className="sm:hidden border-t border-border bg-card px-4 py-3 space-y-2">
+            <Button variant="ghost" size="sm" className="w-full justify-start">
+              <Settings className="h-4 w-4 mr-2" />
+              Paramètres
+            </Button>
+            <Button variant="ghost" size="sm" className="w-full justify-start" asChild>
+              <Link to="/">
+                <LogOut className="h-4 w-4 mr-2" />
+                Déconnexion
+              </Link>
+            </Button>
+          </div>
+        )}
       </header>
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-4 sm:py-8">
         {/* Welcome section */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Bienvenue, Propriétaire</h1>
-          <p className="text-muted-foreground">
+        <div className="mb-6 sm:mb-8">
+          <h1 className="text-xl sm:text-3xl font-bold mb-1 sm:mb-2">Bienvenue, Propriétaire</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">
             Complétez vos vérifications pour accéder à toutes les fonctionnalités.
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-8">
+        <div className="grid lg:grid-cols-3 gap-4 sm:gap-8">
           {/* Main content */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-2 space-y-4 sm:space-y-6">
             {/* Pack status */}
             {!hasPack ? (
               <Card className="border-yellow-200 bg-yellow-50/50">
-                <CardContent className="p-6">
-                  <div className="flex items-center gap-4">
-                    <AlertCircle className="h-10 w-10 text-yellow-600" />
+                <CardContent className="p-4 sm:p-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                    <AlertCircle className="h-8 w-8 sm:h-10 sm:w-10 text-yellow-600 shrink-0" />
                     <div className="flex-1">
-                      <h3 className="font-semibold text-lg">Aucun pack actif</h3>
-                      <p className="text-muted-foreground">
-                        Achetez un pack de vérifications pour commencer à utiliser SafeVerify.
+                      <h3 className="font-semibold text-base sm:text-lg">Aucun pack actif</h3>
+                      <p className="text-sm text-muted-foreground">
+                        Achetez un pack de vérifications pour commencer.
                       </p>
                     </div>
-                    <Button>
-                      <Package className="h-4 w-4 mr-2" />
-                      Acheter un pack
+                    <Button asChild className="w-full sm:w-auto">
+                      <Link to="/packs">
+                        <Package className="h-4 w-4 mr-2" />
+                        Acheter un pack
+                      </Link>
                     </Button>
                   </div>
                 </CardContent>
               </Card>
             ) : (
               <Card>
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between mb-4">
+                <CardContent className="p-4 sm:p-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
                     <div className="flex items-center gap-3">
-                      <Package className="h-8 w-8 text-primary" />
+                      <Package className="h-6 w-6 sm:h-8 sm:w-8 text-primary shrink-0" />
                       <div>
-                        <h3 className="font-semibold">Pack actif</h3>
-                        <p className="text-sm text-muted-foreground">15 vérifications - 50€</p>
+                        <h3 className="font-semibold text-sm sm:text-base">Pack actif</h3>
+                        <p className="text-xs sm:text-sm text-muted-foreground">15 vérifications - 50€</p>
                       </div>
                     </div>
-                    <Button variant="outline" size="sm">
-                      Recharger
+                    <Button variant="outline" size="sm" asChild>
+                      <Link to="/packs">Recharger</Link>
                     </Button>
                   </div>
                   <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
+                    <div className="flex justify-between text-xs sm:text-sm">
                       <span>Vérifications restantes</span>
                       <span className="font-semibold">{verificationCredits} / {totalCredits}</span>
                     </div>
@@ -196,30 +234,30 @@ const Dashboard = () => {
 
             {/* Verification progress */}
             <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Shield className="h-5 w-5 text-primary" />
+              <CardHeader className="p-4 sm:p-6 pb-2 sm:pb-4">
+                <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                  <Shield className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
                   Vérifications personnelles
                 </CardTitle>
-                <CardDescription>
-                  Complétez ces 4 étapes pour activer votre compte propriétaire
+                <CardDescription className="text-xs sm:text-sm">
+                  Complétez ces 4 étapes pour activer votre compte
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0 space-y-4">
                 {/* Progress bar */}
-                <div className="mb-6">
-                  <div className="flex justify-between text-sm mb-2">
+                <div className="mb-4 sm:mb-6">
+                  <div className="flex justify-between text-xs sm:text-sm mb-2">
                     <span>Progression</span>
-                    <span className="font-semibold">{completedSteps}/4 étapes complétées</span>
+                    <span className="font-semibold">{completedSteps}/4 complétées</span>
                   </div>
-                  <Progress value={progressPercentage} className="h-3" />
+                  <Progress value={progressPercentage} className="h-2 sm:h-3" />
                 </div>
 
                 {/* Steps */}
                 <div className="space-y-3">
                   <VerificationStep
                     step="A"
-                    title="Vérification Email"
+                    title="Email"
                     description="Confirmez votre adresse email via un code OTP"
                     icon={Mail}
                     status={verificationSteps.email}
@@ -227,24 +265,24 @@ const Dashboard = () => {
                   />
                   <VerificationStep
                     step="B"
-                    title="Vérification SMS"
-                    description="Validez votre numéro de téléphone via Twilio"
+                    title="SMS"
+                    description="Validez votre numéro de téléphone"
                     icon={Phone}
                     status={verificationSteps.phone}
                     onStart={() => handleStartVerification("phone")}
                   />
                   <VerificationStep
                     step="C"
-                    title="Vérification KYC"
-                    description="Identité vérifiée via Stripe Identity (pièce d'identité + selfie)"
+                    title="KYC"
+                    description="Pièce d'identité + selfie via Stripe Identity"
                     icon={FileCheck}
                     status={verificationSteps.kyc}
                     onStart={() => handleStartVerification("kyc")}
                   />
                   <VerificationStep
                     step="D"
-                    title="Vérification Bancaire"
-                    description="Connexion sécurisée via TrueLayer pour vérifier le titulaire"
+                    title="Bancaire"
+                    description="Connexion sécurisée via TrueLayer"
                     icon={CreditCard}
                     status={verificationSteps.bank}
                     onStart={() => handleStartVerification("bank")}
@@ -252,13 +290,13 @@ const Dashboard = () => {
                 </div>
 
                 {allVerified && (
-                  <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+                  <div className="mt-4 sm:mt-6 p-3 sm:p-4 bg-green-50 border border-green-200 rounded-lg">
                     <div className="flex items-center gap-3">
-                      <CheckCircle2 className="h-6 w-6 text-green-600" />
+                      <CheckCircle2 className="h-5 w-5 sm:h-6 sm:w-6 text-green-600 shrink-0" />
                       <div>
-                        <h4 className="font-semibold text-green-800">Compte vérifié !</h4>
-                        <p className="text-sm text-green-700">
-                          Vous pouvez maintenant créer vos biens et utiliser SafeVerify.
+                        <h4 className="font-semibold text-green-800 text-sm sm:text-base">Compte vérifié !</h4>
+                        <p className="text-xs sm:text-sm text-green-700">
+                          Vous pouvez maintenant créer vos biens.
                         </p>
                       </div>
                     </div>
@@ -269,34 +307,34 @@ const Dashboard = () => {
 
             {/* Properties section */}
             <Card className={!allVerified ? "opacity-50 pointer-events-none" : ""}>
-              <CardHeader>
-                <div className="flex items-center justify-between">
+              <CardHeader className="p-4 sm:p-6 pb-2 sm:pb-4">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                   <div>
-                    <CardTitle className="flex items-center gap-2">
-                      <Home className="h-5 w-5 text-primary" />
+                    <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                      <Home className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
                       Mes biens
                     </CardTitle>
-                    <CardDescription>
-                      Gérez vos logements et configurez les vérifications
+                    <CardDescription className="text-xs sm:text-sm">
+                      Gérez vos logements
                     </CardDescription>
                   </div>
-                  <Button disabled={!allVerified}>
+                  <Button disabled={!allVerified} size="sm" className="w-full sm:w-auto">
                     <Plus className="h-4 w-4 mr-2" />
                     Ajouter un bien
                   </Button>
                 </div>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0">
                 {!allVerified ? (
-                  <div className="text-center py-8 text-muted-foreground">
-                    <Home className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <p>Complétez vos vérifications (A+B+C+D) pour créer des biens</p>
+                  <div className="text-center py-6 sm:py-8 text-muted-foreground">
+                    <Home className="h-10 w-10 sm:h-12 sm:w-12 mx-auto mb-3 sm:mb-4 opacity-50" />
+                    <p className="text-xs sm:text-sm">Complétez vos vérifications (A+B+C+D) pour créer des biens</p>
                   </div>
                 ) : (
-                  <div className="text-center py-8 text-muted-foreground">
-                    <Home className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <p>Aucun bien enregistré</p>
-                    <Button className="mt-4">
+                  <div className="text-center py-6 sm:py-8 text-muted-foreground">
+                    <Home className="h-10 w-10 sm:h-12 sm:w-12 mx-auto mb-3 sm:mb-4 opacity-50" />
+                    <p className="text-xs sm:text-sm">Aucun bien enregistré</p>
+                    <Button className="mt-3 sm:mt-4" size="sm">
                       <Plus className="h-4 w-4 mr-2" />
                       Créer mon premier bien
                     </Button>
@@ -307,43 +345,43 @@ const Dashboard = () => {
           </div>
 
           {/* Sidebar */}
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6">
             {/* Account status */}
             <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Statut du compte</CardTitle>
+              <CardHeader className="p-4 sm:p-6 pb-2 sm:pb-4">
+                <CardTitle className="text-base sm:text-lg">Statut du compte</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0 space-y-3 sm:space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm">Email vérifié</span>
+                  <span className="text-xs sm:text-sm">Email vérifié</span>
                   {verificationSteps.email === "completed" ? (
-                    <CheckCircle2 className="h-5 w-5 text-green-500" />
+                    <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 text-green-500" />
                   ) : (
-                    <Circle className="h-5 w-5 text-muted-foreground" />
+                    <Circle className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
                   )}
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm">Téléphone vérifié</span>
+                  <span className="text-xs sm:text-sm">Téléphone vérifié</span>
                   {verificationSteps.phone === "completed" ? (
-                    <CheckCircle2 className="h-5 w-5 text-green-500" />
+                    <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 text-green-500" />
                   ) : (
-                    <Circle className="h-5 w-5 text-muted-foreground" />
+                    <Circle className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
                   )}
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm">Identité vérifiée</span>
+                  <span className="text-xs sm:text-sm">Identité vérifiée</span>
                   {verificationSteps.kyc === "completed" ? (
-                    <CheckCircle2 className="h-5 w-5 text-green-500" />
+                    <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 text-green-500" />
                   ) : (
-                    <Circle className="h-5 w-5 text-muted-foreground" />
+                    <Circle className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
                   )}
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm">Compte bancaire</span>
+                  <span className="text-xs sm:text-sm">Compte bancaire</span>
                   {verificationSteps.bank === "completed" ? (
-                    <CheckCircle2 className="h-5 w-5 text-green-500" />
+                    <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 text-green-500" />
                   ) : (
-                    <Circle className="h-5 w-5 text-muted-foreground" />
+                    <Circle className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
                   )}
                 </div>
               </CardContent>
@@ -351,17 +389,17 @@ const Dashboard = () => {
 
             {/* Email ingestion info */}
             <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Email d'ingestion</CardTitle>
-                <CardDescription>
+              <CardHeader className="p-4 sm:p-6 pb-2 sm:pb-4">
+                <CardTitle className="text-base sm:text-lg">Email d'ingestion</CardTitle>
+                <CardDescription className="text-xs sm:text-sm">
                   Configurez cette adresse comme co-hôte
                 </CardDescription>
               </CardHeader>
-              <CardContent>
-                <div className="p-3 bg-muted rounded-lg font-mono text-xs break-all">
+              <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0">
+                <div className="p-2 sm:p-3 bg-muted rounded-lg font-mono text-[10px] sm:text-xs break-all">
                   host-XXXX-abc123@in.safeverify.com
                 </div>
-                <p className="text-xs text-muted-foreground mt-3">
+                <p className="text-[10px] sm:text-xs text-muted-foreground mt-2 sm:mt-3">
                   Ajoutez cette adresse comme co-hôte Airbnb ou email secondaire Booking.
                 </p>
               </CardContent>
@@ -369,19 +407,21 @@ const Dashboard = () => {
 
             {/* Quick links */}
             <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Liens rapides</CardTitle>
+              <CardHeader className="p-4 sm:p-6 pb-2 sm:pb-4">
+                <CardTitle className="text-base sm:text-lg">Liens rapides</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-2">
-                <Button variant="ghost" className="w-full justify-between">
-                  Gérer mon abonnement
-                  <ChevronRight className="h-4 w-4" />
+              <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0 space-y-1 sm:space-y-2">
+                <Button variant="ghost" className="w-full justify-between text-xs sm:text-sm h-9 sm:h-10" asChild>
+                  <Link to="/abonnement">
+                    Gérer mon abonnement
+                    <ChevronRight className="h-4 w-4" />
+                  </Link>
                 </Button>
-                <Button variant="ghost" className="w-full justify-between">
+                <Button variant="ghost" className="w-full justify-between text-xs sm:text-sm h-9 sm:h-10">
                   Configurer la conciergerie
                   <ChevronRight className="h-4 w-4" />
                 </Button>
-                <Button variant="ghost" className="w-full justify-between">
+                <Button variant="ghost" className="w-full justify-between text-xs sm:text-sm h-9 sm:h-10">
                   Contacter le support
                   <ChevronRight className="h-4 w-4" />
                 </Button>
