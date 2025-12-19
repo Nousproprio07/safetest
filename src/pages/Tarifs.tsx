@@ -19,13 +19,13 @@ const pricingPlans = [
   {
     name: "Essentiel",
     description: "Pour les propriétaires occasionnels",
-    price: "90",
-    verifications: "20",
-    pricePerVerif: "4,50€",
+    price: "49",
+    verifications: "10",
+    pricePerVerif: "4,90€",
     properties: "1 logement",
     validity: "12 mois",
     features: [
-      "20 vérifications incluses",
+      "10 vérifications incluses",
       "1 logement",
       "Score de confiance détaillé",
       "Vérification d'identité",
@@ -88,8 +88,8 @@ const pricingPlans = [
 ];
 
 const comparisonFeatures = [
-  { name: "Vérifications incluses", essentiel: "20", pro: "30", premium: "50" },
-  { name: "Prix par vérification", essentiel: "4,50€", pro: "4,33€", premium: "4,10€" },
+  { name: "Vérifications incluses", essentiel: "10", pro: "30", premium: "50" },
+  { name: "Prix par vérification", essentiel: "4,90€", pro: "4,33€", premium: "4,10€" },
   { name: "Logements", essentiel: "1", pro: "2", premium: "4" },
   { name: "Score de confiance détaillé", essentiel: true, pro: true, premium: true },
   { name: "Vérification d'identité", essentiel: true, pro: true, premium: true },
@@ -298,7 +298,7 @@ const Tarifs = () => {
                         {isCurrentPack("Essentiel") && (
                           <span className="text-xs text-primary font-medium">Pack actuel</span>
                         )}
-                        <span className="text-2xl font-bold text-primary">90€</span>
+                        <span className="text-2xl font-bold text-primary">49€</span>
                       </div>
                     </TableHead>
                     <TableHead className={`text-center font-semibold text-foreground ${isCurrentPack("Pro") ? "bg-primary/10 border-x border-primary/20" : !isChangerPackPage ? "bg-primary/10 border-x border-primary/20" : ""}`}>
