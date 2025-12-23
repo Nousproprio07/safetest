@@ -261,16 +261,12 @@ const Tarifs = () => {
                         <span className="text-2xl font-bold text-primary">49€</span>
                       </div>
                     </TableHead>
-                    <TableHead className="text-center font-semibold text-foreground bg-accent/10 border-x-2 border-accent relative">
-                      {/* Badge flottant */}
-                      <div className="absolute -top-3 left-1/2 -translate-x-1/2 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-accent/10 text-accent whitespace-nowrap">
-                        <Star className="w-3.5 h-3.5 fill-accent" />
-                        <span className="text-xs font-medium">Le plus populaire</span>
-                      </div>
-                      <div className="flex flex-col items-center gap-1 pt-4">
-                        <Star className="w-5 h-5 text-accent" />
+                    <TableHead className="text-center font-semibold text-foreground bg-primary/10 border-x border-primary/20">
+                      <div className="flex flex-col items-center gap-1">
+                        <Star className="w-5 h-5 text-primary" />
                         <span>Pro</span>
-                        <span className="text-2xl font-bold text-accent">130€</span>
+                        <span className="text-xs text-primary font-medium">Le plus populaire</span>
+                        <span className="text-2xl font-bold text-primary">130€</span>
                       </div>
                     </TableHead>
                     <TableHead className="text-center font-semibold text-foreground">
@@ -289,7 +285,7 @@ const Tarifs = () => {
                       <TableCell className="text-center">
                         {renderFeatureValue(feature.essentiel)}
                       </TableCell>
-                      <TableCell className="text-center bg-accent/5 border-x-2 border-accent/30">
+                      <TableCell className="text-center bg-primary/5 border-x border-primary/10">
                         {renderFeatureValue(feature.pro)}
                       </TableCell>
                       <TableCell className="text-center">
@@ -307,7 +303,7 @@ const Tarifs = () => {
                         Choisir Essentiel
                       </Button>
                     </TableCell>
-                    <TableCell className="text-center py-6 bg-accent/5 border-x-2 border-accent/30">
+                    <TableCell className="text-center py-6 bg-primary/5 border-x border-primary/10">
                       <Button 
                         variant="hero" 
                         className="w-full max-w-[160px]"
