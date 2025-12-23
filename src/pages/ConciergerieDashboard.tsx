@@ -63,11 +63,20 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 
+// Helper to check if owner allows concierge reporting
+const getOwnerAllowsConciergeReporting = (): boolean => {
+  const stored = localStorage.getItem("safeverify_owner_settings");
+  if (!stored) return false;
+  const settings = JSON.parse(stored);
+  return settings.allowConciergeReporting || false;
+};
+
 // Mock data for property owners (clients)
+// In real implementation, canReport would be fetched from the owner's settings
 const mockClients = [
-  { id: "1", name: "Jean Dupont", email: "jean.dupont@email.com", propertiesCount: 3, canReport: true },
-  { id: "2", name: "Marie Martin", email: "marie.martin@email.com", propertiesCount: 2, canReport: false },
-  { id: "3", name: "Pierre Bernard", email: "pierre.bernard@email.com", propertiesCount: 5, canReport: true },
+  { id: "1", name: "Jean Dupont", email: "jean.dupont@email.com", propertiesCount: 3 },
+  { id: "2", name: "Marie Martin", email: "marie.martin@email.com", propertiesCount: 2 },
+  { id: "3", name: "Pierre Bernard", email: "pierre.bernard@email.com", propertiesCount: 5 },
 ];
 
 // Mock data for properties per client
@@ -131,6 +140,9 @@ const ConciergerieDashboard = () => {
   const [expandedPropertyMobile, setExpandedPropertyMobile] = useState<string | null>(null);
   const [reportKey, setReportKey] = useState(0);
   const forceRerender = () => setReportKey(k => k + 1);
+  
+  // Check if the owner allows concierge reporting (from localStorage settings)
+  const canReport = getOwnerAllowsConciergeReporting();
 
   const clientProperties = mockProperties[selectedClient.id] || [];
   const selectedPropertyData = clientProperties.find(p => p.id === selectedProperty);
@@ -255,7 +267,7 @@ const ConciergerieDashboard = () => {
                 <p className="text-sm font-medium text-blue-800">Mode lecture seule</p>
                 <p className="text-xs text-blue-700">
                   Vous pouvez consulter les biens et vérifications mais pas les modifier.
-                  {selectedClient.canReport && " Signalement de fraude activé par ce propriétaire."}
+                  {canReport && " Signalement de fraude activé par ce propriétaire."}
                 </p>
               </div>
             </div>
@@ -324,7 +336,7 @@ const ConciergerieDashboard = () => {
                             </span>
                           )}
                         </div>
-                      ) : selectedClient.canReport ? (
+                      ) : canReport ? (
                         <Button size="sm" variant="destructive" onClick={handleReport}>
                           <Flag className="h-4 w-4 mr-1" />
                           Signaler
@@ -395,7 +407,7 @@ const ConciergerieDashboard = () => {
                         {/* Mobile: inline verifications accordion */}
                         {isExpanded && (
                           <div className="lg:hidden mt-2 ml-2 pl-3 border-l-2 border-primary/30 space-y-2 animate-in slide-in-from-top-2 duration-200">
-                            {selectedClient.canReport && (
+                            {canReport && (
                               <Button variant="outline" size="sm" className="w-full text-red-600 border-red-200 hover:bg-red-50 mb-2">
                                 <Flag className="h-4 w-4 mr-2" />
                                 Signaler une fraude
@@ -459,7 +471,7 @@ const ConciergerieDashboard = () => {
                       Historique des vérifications voyageurs
                     </CardDescription>
                   </div>
-                  {selectedClient.canReport && selectedProperty && (
+                  {canReport && selectedProperty && (
                     <Button variant="outline" size="sm" className="text-red-600 border-red-200 hover:bg-red-50">
                       <Flag className="h-4 w-4 mr-2" />
                       Signaler une fraude
