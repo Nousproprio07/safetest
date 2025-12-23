@@ -5,9 +5,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import CreatePropertyDialog from "@/components/dashboard/CreatePropertyDialog";
+import FraudReportDialog from "@/components/dashboard/FraudReportDialog";
 import { 
   Shield, 
-  Mail, 
+  Mail,
   Phone, 
   FileCheck, 
   CreditCard, 
@@ -232,6 +233,7 @@ const Dashboard = () => {
   // Properties state
   const [properties, setProperties] = useState<Property[]>([]);
   const [createPropertyOpen, setCreatePropertyOpen] = useState(false);
+  const [fraudReportOpen, setFraudReportOpen] = useState(false);
 
   const handlePropertyCreated = (property: Property) => {
     setProperties((prev) => [...prev, property]);
@@ -651,8 +653,9 @@ const Dashboard = () => {
                         guestName: `${verification.guestFirstName} ${verification.guestName}`,
                         propertyName: verification.propertyName
                       });
-                      toast.success("Fraude signalée", {
-                        description: `Le voyageur ${verification.guestFirstName} ${verification.guestName} a été signalé et enregistré dans notre système.`
+                      toast.success("Signalement transmis à SafeVerify", {
+                        description: `Les informations concernant ${verification.guestFirstName} ${verification.guestName} ont été transmises à notre support et enregistrées comme fraude pour protéger tous les autres utilisateurs.`,
+                        duration: 6000
                       });
                       // Force re-render
                       forceRerender();
@@ -674,9 +677,16 @@ const Dashboard = () => {
                           </div>
                         </div>
                         {existingReport ? (
-                          <Badge variant="secondary" className="bg-green-100 text-green-700">
-                            ✓ Signalé par {existingReport.reporterType === "conciergerie" ? "la conciergerie" : existingReport.reportedBy}
-                          </Badge>
+                          <div className="flex flex-col items-end gap-1">
+                            <Badge variant="secondary" className="bg-green-100 text-green-700">
+                              ✓ Signalé par {existingReport.reporterType === "conciergerie" ? "la conciergerie" : existingReport.reportedBy}
+                            </Badge>
+                            {existingReport.reporterType === "conciergerie" && (
+                              <span className="text-xs text-muted-foreground">
+                                La conciergerie a déjà transmis la fraude au service SafeVerify
+                              </span>
+                            )}
+                          </div>
                         ) : (
                           <Button size="sm" variant="destructive" onClick={handleReport}>
                             Signaler
@@ -986,6 +996,17 @@ const Dashboard = () => {
                 <CardTitle className="text-base sm:text-lg">Liens rapides</CardTitle>
               </CardHeader>
               <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0 space-y-1 sm:space-y-2">
+                <Button 
+                  variant="ghost" 
+                  className="w-full justify-between text-xs sm:text-sm h-9 sm:h-10 text-red-600 hover:text-red-700 hover:bg-red-50"
+                  onClick={() => setFraudReportOpen(true)}
+                >
+                  <span className="flex items-center gap-2">
+                    <AlertTriangle className="h-4 w-4" />
+                    Signaler une fraude
+                  </span>
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
                 <Button variant="ghost" className="w-full justify-between text-xs sm:text-sm h-9 sm:h-10" asChild>
                   <Link to="/changer-pack">
                     Changer de pack
@@ -1017,6 +1038,14 @@ const Dashboard = () => {
         open={createPropertyOpen}
         onOpenChange={setCreatePropertyOpen}
         onPropertyCreated={handlePropertyCreated}
+      />
+
+      {/* Fraud Report Dialog */}
+      <FraudReportDialog
+        open={fraudReportOpen}
+        onOpenChange={setFraudReportOpen}
+        allVerified={allVerified}
+        hasActivePack={hasPack}
       />
     </div>
   );

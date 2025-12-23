@@ -292,8 +292,9 @@ const ConciergerieDashboard = () => {
                       guestName: `${alert.guestFirstName} ${alert.guestName}`,
                       propertyName: alert.propertyName
                     });
-                    toast.success("Fraude signalée", {
-                      description: `Le voyageur ${alert.guestFirstName} ${alert.guestName} a été signalé et enregistré dans notre système.`
+                    toast.success("Signalement transmis à SafeVerify", {
+                      description: `Les informations concernant ${alert.guestFirstName} ${alert.guestName} ont été transmises à notre support et enregistrées comme fraude pour protéger tous les autres utilisateurs.`,
+                      duration: 6000
                     });
                     // Force re-render
                     forceRerender();
@@ -313,9 +314,16 @@ const ConciergerieDashboard = () => {
                         </div>
                       </div>
                       {existingReport ? (
-                        <Badge variant="secondary" className="bg-green-100 text-green-700">
-                          ✓ Signalé par {existingReport.reporterType === "proprietaire" ? "le propriétaire" : existingReport.reportedBy}
-                        </Badge>
+                        <div className="flex flex-col items-end gap-1">
+                          <Badge variant="secondary" className="bg-green-100 text-green-700">
+                            ✓ Signalé par {existingReport.reporterType === "proprietaire" ? "le propriétaire" : existingReport.reportedBy}
+                          </Badge>
+                          {existingReport.reporterType === "proprietaire" && (
+                            <span className="text-xs text-muted-foreground">
+                              Le propriétaire a déjà transmis la fraude au service SafeVerify
+                            </span>
+                          )}
+                        </div>
                       ) : selectedClient.canReport ? (
                         <Button size="sm" variant="destructive" onClick={handleReport}>
                           <Flag className="h-4 w-4 mr-1" />
