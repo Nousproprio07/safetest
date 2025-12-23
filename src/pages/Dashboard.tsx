@@ -1011,12 +1011,6 @@ const Dashboard = () => {
                   </span>
                   <ChevronRight className="h-4 w-4" />
                 </Button>
-                <Button variant="ghost" className="w-full justify-between text-xs sm:text-sm h-9 sm:h-10" asChild>
-                  <Link to="/changer-pack">
-                    Changer de pack
-                    <ChevronRight className="h-4 w-4" />
-                  </Link>
-                </Button>
                 <Button 
                   variant="ghost" 
                   className="w-full justify-between text-xs sm:text-sm h-9 sm:h-10"
@@ -1027,6 +1021,12 @@ const Dashboard = () => {
                     Historique des signalements
                   </span>
                   <ChevronRight className="h-4 w-4" />
+                </Button>
+                <Button variant="ghost" className="w-full justify-between text-xs sm:text-sm h-9 sm:h-10" asChild>
+                  <Link to="/changer-pack">
+                    Changer de pack
+                    <ChevronRight className="h-4 w-4" />
+                  </Link>
                 </Button>
                 <Button variant="ghost" className="w-full justify-between text-xs sm:text-sm h-9 sm:h-10" asChild>
                   <Link to="/recharger-credits">
