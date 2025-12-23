@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import CreatePropertyDialog from "@/components/dashboard/CreatePropertyDialog";
 import FraudReportDialog from "@/components/dashboard/FraudReportDialog";
 import OwnerSettingsDialog from "@/components/dashboard/OwnerSettingsDialog";
+import FraudReportsHistory from "@/components/dashboard/FraudReportsHistory";
 import { 
   Shield, 
   Mail,
@@ -235,6 +236,7 @@ const Dashboard = () => {
   const [properties, setProperties] = useState<Property[]>([]);
   const [createPropertyOpen, setCreatePropertyOpen] = useState(false);
   const [fraudReportOpen, setFraudReportOpen] = useState(false);
+  const [fraudHistoryOpen, setFraudHistoryOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
 
   const handlePropertyCreated = (property: Property) => {
@@ -1015,6 +1017,17 @@ const Dashboard = () => {
                     <ChevronRight className="h-4 w-4" />
                   </Link>
                 </Button>
+                <Button 
+                  variant="ghost" 
+                  className="w-full justify-between text-xs sm:text-sm h-9 sm:h-10"
+                  onClick={() => setFraudHistoryOpen(true)}
+                >
+                  <span className="flex items-center gap-2">
+                    <FileCheck className="h-4 w-4" />
+                    Historique des signalements
+                  </span>
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
                 <Button variant="ghost" className="w-full justify-between text-xs sm:text-sm h-9 sm:h-10" asChild>
                   <Link to="/recharger-credits">
                     Recharger mes crédits
@@ -1054,6 +1067,12 @@ const Dashboard = () => {
       <OwnerSettingsDialog
         open={settingsOpen}
         onOpenChange={setSettingsOpen}
+      />
+
+      {/* Fraud Reports History Dialog */}
+      <FraudReportsHistory
+        open={fraudHistoryOpen}
+        onOpenChange={setFraudHistoryOpen}
       />
     </div>
   );
