@@ -6,6 +6,7 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import CreatePropertyDialog from "@/components/dashboard/CreatePropertyDialog";
 import FraudReportDialog from "@/components/dashboard/FraudReportDialog";
+import OwnerSettingsDialog from "@/components/dashboard/OwnerSettingsDialog";
 import { 
   Shield, 
   Mail,
@@ -234,6 +235,7 @@ const Dashboard = () => {
   const [properties, setProperties] = useState<Property[]>([]);
   const [createPropertyOpen, setCreatePropertyOpen] = useState(false);
   const [fraudReportOpen, setFraudReportOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   const handlePropertyCreated = (property: Property) => {
     setProperties((prev) => [...prev, property]);
@@ -377,7 +379,7 @@ const Dashboard = () => {
           
           {/* Desktop menu */}
           <div className="hidden sm:flex items-center gap-2 sm:gap-4">
-            <Button variant="ghost" size="sm">
+            <Button variant="ghost" size="sm" onClick={() => setSettingsOpen(true)}>
               <Settings className="h-4 w-4 mr-2" />
               Paramètres
             </Button>
@@ -403,7 +405,7 @@ const Dashboard = () => {
         {/* Mobile menu */}
         {mobileMenuOpen && (
           <div className="sm:hidden border-t border-border bg-card px-4 py-3 space-y-2">
-            <Button variant="ghost" size="sm" className="w-full justify-start">
+            <Button variant="ghost" size="sm" className="w-full justify-start" onClick={() => { setSettingsOpen(true); setMobileMenuOpen(false); }}>
               <Settings className="h-4 w-4 mr-2" />
               Paramètres
             </Button>
@@ -1046,6 +1048,12 @@ const Dashboard = () => {
         onOpenChange={setFraudReportOpen}
         allVerified={allVerified}
         hasActivePack={hasPack}
+      />
+
+      {/* Owner Settings Dialog */}
+      <OwnerSettingsDialog
+        open={settingsOpen}
+        onOpenChange={setSettingsOpen}
       />
     </div>
   );
