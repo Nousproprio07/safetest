@@ -1162,10 +1162,26 @@ const Dashboard = () => {
                 </Card>
               );
             })()}
-            {(() => {
-              // Mock: account verified 1 year ago, renewal in 1 year
+            {/* Mobile: Compte vérifié card */}
+            {allVerified && (
+              <Card className="sm:hidden border-green-200 bg-green-50/50">
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 bg-green-100">
+                      <CheckCircle2 className="h-5 w-5 text-green-600" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-semibold text-sm text-green-700">Compte vérifié</p>
+                      <p className="text-xs text-green-600">Toutes les vérifications sont complètes</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Mobile: Prochaine vérification - only shown after verifications complete */}
+            {allVerified && (() => {
               const verificationDate = new Date();
-              verificationDate.setFullYear(verificationDate.getFullYear() - 0); // Verified today for demo
               const renewalDate = new Date(verificationDate);
               renewalDate.setFullYear(renewalDate.getFullYear() + 1);
               
