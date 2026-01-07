@@ -11,6 +11,7 @@ import CreatePropertyDialog from "@/components/dashboard/CreatePropertyDialog";
 import FraudReportDialog from "@/components/dashboard/FraudReportDialog";
 import OwnerSettingsDialog from "@/components/dashboard/OwnerSettingsDialog";
 import FraudReportsHistory from "@/components/dashboard/FraudReportsHistory";
+import ConciergerieConfigDialog from "@/components/dashboard/ConciergerieConfigDialog";
 import { 
   Shield, 
   Mail,
@@ -248,6 +249,10 @@ const Dashboard = () => {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [showVerificationDetails, setShowVerificationDetails] = useState(false);
   const [showVerificationPage, setShowVerificationPage] = useState(false);
+  const [conciergerieConfigOpen, setConciergerieConfigOpen] = useState(false);
+  
+  // Generate unique owner code for conciergerie access
+  const ownerCode = "OWN-" + Math.random().toString(36).substring(2, 8).toUpperCase();
   
   // User mode (Propriétaire / Voyageur)
   const [userMode, setUserMode] = useState<"proprietaire" | "voyageur">(() => {
@@ -1239,6 +1244,7 @@ const Dashboard = () => {
                   size="sm" 
                   className="w-full justify-between text-xs sm:text-sm"
                   disabled={!allVerified}
+                  onClick={() => setConciergerieConfigOpen(true)}
                 >
                   <span className="flex items-center gap-2">
                     <Settings className="h-4 w-4" />
@@ -1443,6 +1449,14 @@ const Dashboard = () => {
       <FraudReportsHistory
         open={fraudHistoryOpen}
         onOpenChange={setFraudHistoryOpen}
+      />
+
+      {/* Conciergerie Config Dialog */}
+      <ConciergerieConfigDialog
+        open={conciergerieConfigOpen}
+        onOpenChange={setConciergerieConfigOpen}
+        properties={properties}
+        ownerCode={ownerCode}
       />
     </div>
   );
