@@ -856,78 +856,85 @@ const Dashboard = () => {
               </Card>
             )}
 
-            {/* Verification progress */}
-            <Card>
-              <CardHeader className="p-4 sm:p-6 pb-2 sm:pb-4">
-                <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
-                  <Shield className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
-                  Vérifications personnelles
-                </CardTitle>
-                <CardDescription className="text-xs sm:text-sm">
-                  Complétez ces 4 étapes pour activer votre compte
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0 space-y-4">
-                {/* Progress bar */}
-                <div className="mb-4 sm:mb-6">
-                  <div className="flex justify-between text-xs sm:text-sm mb-2">
-                    <span>Progression</span>
-                    <span className="font-semibold">{completedSteps}/4 complétées</span>
-                  </div>
-                  <Progress value={progressPercentage} className="h-2 sm:h-3" />
-                </div>
-
-                {/* Steps */}
-                <div className="space-y-3">
-                  <VerificationStep
-                    step="A"
-                    title="Email"
-                    description="Confirmez votre adresse email via un code OTP"
-                    icon={Mail}
-                    status={verificationSteps.email}
-                    onStart={() => handleStartVerification("email")}
-                  />
-                  <VerificationStep
-                    step="B"
-                    title="SMS"
-                    description="Validez votre numéro de téléphone"
-                    icon={Phone}
-                    status={verificationSteps.phone}
-                    onStart={() => handleStartVerification("phone")}
-                  />
-                  <VerificationStep
-                    step="C"
-                    title="KYC"
-                    description="Pièce d'identité + selfie via Stripe Identity"
-                    icon={FileCheck}
-                    status={verificationSteps.kyc}
-                    onStart={() => handleStartVerification("kyc")}
-                  />
-                  <VerificationStep
-                    step="D"
-                    title="Bancaire"
-                    description="Connexion sécurisée via TrueLayer"
-                    icon={CreditCard}
-                    status={verificationSteps.bank}
-                    onStart={() => handleStartVerification("bank")}
-                  />
-                </div>
-
-                {allVerified && (
-                  <div className="mt-4 sm:mt-6 p-3 sm:p-4 bg-green-50 border border-green-200 rounded-lg">
-                    <div className="flex items-center gap-3">
-                      <CheckCircle2 className="h-5 w-5 sm:h-6 sm:w-6 text-green-600 shrink-0" />
-                      <div>
-                        <h4 className="font-semibold text-green-800 text-sm sm:text-base">Compte vérifié !</h4>
-                        <p className="text-xs sm:text-sm text-green-700">
-                          Vous pouvez maintenant créer vos biens.
-                        </p>
-                      </div>
+            {/* Verification progress - collapsible when all verified */}
+            {allVerified ? (
+              <Card className="border-green-200 bg-green-50/50">
+                <CardContent className="p-4 sm:p-6">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-green-100 flex items-center justify-center shrink-0">
+                      <CheckCircle2 className="h-5 w-5 sm:h-6 sm:w-6 text-green-600" />
                     </div>
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-green-800 text-sm sm:text-base">Compte vérifié ✓</h3>
+                      <p className="text-xs sm:text-sm text-green-700">
+                        Toutes vos vérifications sont complétées
+                      </p>
+                    </div>
+                    <Badge variant="outline" className="bg-green-100 text-green-700 border-green-300">
+                      4/4
+                    </Badge>
                   </div>
-                )}
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            ) : (
+              <Card>
+                <CardHeader className="p-4 sm:p-6 pb-2 sm:pb-4">
+                  <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                    <Shield className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+                    Vérifications personnelles
+                  </CardTitle>
+                  <CardDescription className="text-xs sm:text-sm">
+                    Complétez ces 4 étapes pour activer votre compte
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0 space-y-4">
+                  {/* Progress bar */}
+                  <div className="mb-4 sm:mb-6">
+                    <div className="flex justify-between text-xs sm:text-sm mb-2">
+                      <span>Progression</span>
+                      <span className="font-semibold">{completedSteps}/4 complétées</span>
+                    </div>
+                    <Progress value={progressPercentage} className="h-2 sm:h-3" />
+                  </div>
+
+                  {/* Steps */}
+                  <div className="space-y-3">
+                    <VerificationStep
+                      step="A"
+                      title="Email"
+                      description="Confirmez votre adresse email via un code OTP"
+                      icon={Mail}
+                      status={verificationSteps.email}
+                      onStart={() => handleStartVerification("email")}
+                    />
+                    <VerificationStep
+                      step="B"
+                      title="SMS"
+                      description="Validez votre numéro de téléphone"
+                      icon={Phone}
+                      status={verificationSteps.phone}
+                      onStart={() => handleStartVerification("phone")}
+                    />
+                    <VerificationStep
+                      step="C"
+                      title="KYC"
+                      description="Pièce d'identité + selfie via Stripe Identity"
+                      icon={FileCheck}
+                      status={verificationSteps.kyc}
+                      onStart={() => handleStartVerification("kyc")}
+                    />
+                    <VerificationStep
+                      step="D"
+                      title="Bancaire"
+                      description="Connexion sécurisée via TrueLayer"
+                      icon={CreditCard}
+                      status={verificationSteps.bank}
+                      onStart={() => handleStartVerification("bank")}
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
             {/* Properties section */}
             <Card className={!allVerified ? "opacity-50 pointer-events-none" : ""}>
