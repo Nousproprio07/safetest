@@ -245,6 +245,7 @@ const Dashboard = () => {
   const [fraudReportOpen, setFraudReportOpen] = useState(false);
   const [fraudHistoryOpen, setFraudHistoryOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [showVerificationDetails, setShowVerificationDetails] = useState(false);
   
   // User mode (Propriétaire / Voyageur)
   const [userMode, setUserMode] = useState<"proprietaire" | "voyageur">(() => {
@@ -857,7 +858,7 @@ const Dashboard = () => {
             )}
 
             {/* Verification progress - collapsible when all verified */}
-            {allVerified ? (
+            {allVerified && !showVerificationDetails ? (
               <Card className="border-green-200 bg-green-50/50">
                 <CardContent className="p-4 sm:p-6">
                   <div className="flex items-center gap-3">
@@ -1197,6 +1198,17 @@ const Dashboard = () => {
                   <span className="flex items-center gap-2">
                     <FileCheck className="h-4 w-4" />
                     Historique des signalements
+                  </span>
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  className="w-full justify-between text-xs sm:text-sm h-9 sm:h-10"
+                  onClick={() => setShowVerificationDetails(!showVerificationDetails)}
+                >
+                  <span className="flex items-center gap-2">
+                    <Shield className="h-4 w-4" />
+                    Vérifications personnelles
                   </span>
                   <ChevronRight className="h-4 w-4" />
                 </Button>
