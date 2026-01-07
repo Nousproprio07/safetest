@@ -74,26 +74,26 @@ const Abonnement = () => {
               <CardContent className="space-y-6">
                 {/* Crédits abonnement */}
                 <div>
-                  <div className="flex justify-between text-sm mb-2">
+                  <div className="flex flex-col sm:flex-row sm:justify-between text-sm mb-2 gap-1">
                     <span className="flex items-center gap-2">
-                      <Package className="h-4 w-4 text-primary" />
-                      Crédits abonnement (Pack)
+                      <Package className="h-4 w-4 text-primary shrink-0" />
+                      <span className="text-xs sm:text-sm">Crédits abonnement</span>
                     </span>
-                    <span className="font-semibold">{currentPack.subscriptionCredits} / {currentPack.subscriptionTotalCredits}</span>
+                    <span className="font-semibold text-xs sm:text-sm">{currentPack.subscriptionCredits} / {currentPack.subscriptionTotalCredits}</span>
                   </div>
-                  <Progress value={(currentPack.subscriptionCredits / currentPack.subscriptionTotalCredits) * 100} className="h-3" />
+                  <Progress value={(currentPack.subscriptionCredits / currentPack.subscriptionTotalCredits) * 100} className="h-2 sm:h-3" />
                 </div>
 
                 {/* Crédits recharge */}
                 <div>
-                  <div className="flex justify-between text-sm mb-2">
+                  <div className="flex flex-col sm:flex-row sm:justify-between text-sm mb-2 gap-1">
                     <span className="flex items-center gap-2">
-                      <Plus className="h-4 w-4 text-green-500" />
-                      Crédits recharge (Achetés en plus)
+                      <Plus className="h-4 w-4 text-green-500 shrink-0" />
+                      <span className="text-xs sm:text-sm">Crédits recharge</span>
                     </span>
-                    <span className="font-semibold">{currentPack.rechargeCredits} / {currentPack.rechargeTotalCredits}</span>
+                    <span className="font-semibold text-xs sm:text-sm">{currentPack.rechargeCredits} / {currentPack.rechargeTotalCredits}</span>
                   </div>
-                  <Progress value={(currentPack.rechargeCredits / currentPack.rechargeTotalCredits) * 100} className="h-3 [&>div]:bg-green-500" />
+                  <Progress value={(currentPack.rechargeCredits / currentPack.rechargeTotalCredits) * 100} className="h-2 sm:h-3 [&>div]:bg-green-500" />
                 </div>
 
                 {/* Details */}
