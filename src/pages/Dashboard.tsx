@@ -4,6 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 import CreatePropertyDialog from "@/components/dashboard/CreatePropertyDialog";
 import FraudReportDialog from "@/components/dashboard/FraudReportDialog";
 import OwnerSettingsDialog from "@/components/dashboard/OwnerSettingsDialog";
@@ -33,7 +36,9 @@ import {
   ExternalLink,
   AlertTriangle,
   User,
-  Calendar
+  Calendar,
+  Users,
+  Plane
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -240,6 +245,38 @@ const Dashboard = () => {
   const [fraudReportOpen, setFraudReportOpen] = useState(false);
   const [fraudHistoryOpen, setFraudHistoryOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  
+  // User mode (Propriétaire / Voyageur)
+  const [userMode, setUserMode] = useState<"proprietaire" | "voyageur">(() => {
+    const stored = localStorage.getItem("safeverify_user_mode");
+    return (stored as "proprietaire" | "voyageur") || "proprietaire";
+  });
+  
+  // Conciergerie permission
+  const [allowConciergeReporting, setAllowConciergeReporting] = useState(() => {
+    const stored = localStorage.getItem("safeverify_owner_settings");
+    if (stored) {
+      const settings = JSON.parse(stored);
+      return settings.allowConciergeReporting || false;
+    }
+    return false;
+  });
+
+  const handleUserModeChange = (checked: boolean) => {
+    const newMode = checked ? "voyageur" : "proprietaire";
+    setUserMode(newMode);
+    localStorage.setItem("safeverify_user_mode", newMode);
+    toast.success(`Mode ${newMode === "proprietaire" ? "Propriétaire" : "Voyageur"} activé`);
+  };
+
+  const handleConciergePermissionChange = (checked: boolean) => {
+    setAllowConciergeReporting(checked);
+    const stored = localStorage.getItem("safeverify_owner_settings");
+    const settings = stored ? JSON.parse(stored) : {};
+    settings.allowConciergeReporting = checked;
+    localStorage.setItem("safeverify_owner_settings", JSON.stringify(settings));
+    toast.success(checked ? "Permission conciergerie activée" : "Permission conciergerie désactivée");
+  };
 
   const handlePropertyCreated = (property: Property) => {
     setProperties((prev) => [...prev, property]);
@@ -383,6 +420,19 @@ const Dashboard = () => {
           
           {/* Desktop menu */}
           <div className="hidden sm:flex items-center gap-2 sm:gap-4">
+            {/* Mode switch */}
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-muted rounded-full">
+              <User className={`h-4 w-4 ${userMode === "proprietaire" ? "text-primary" : "text-muted-foreground"}`} />
+              <span className={`text-xs font-medium ${userMode === "proprietaire" ? "text-primary" : "text-muted-foreground"}`}>Propriétaire</span>
+              <Switch
+                checked={userMode === "voyageur"}
+                onCheckedChange={handleUserModeChange}
+                className="data-[state=checked]:bg-primary"
+              />
+              <Plane className={`h-4 w-4 ${userMode === "voyageur" ? "text-primary" : "text-muted-foreground"}`} />
+              <span className={`text-xs font-medium ${userMode === "voyageur" ? "text-primary" : "text-muted-foreground"}`}>Voyageur</span>
+            </div>
+            
             <Button variant="ghost" size="sm" onClick={() => setSettingsOpen(true)}>
               <Settings className="h-4 w-4 mr-2" />
               Paramètres
@@ -408,7 +458,24 @@ const Dashboard = () => {
         
         {/* Mobile menu */}
         {mobileMenuOpen && (
-          <div className="sm:hidden border-t border-border bg-card px-4 py-3 space-y-2">
+          <div className="sm:hidden border-t border-border bg-card px-4 py-3 space-y-3">
+            {/* Mode switch for mobile */}
+            <div className="flex items-center justify-between p-2 bg-muted rounded-lg">
+              <div className="flex items-center gap-2">
+                <User className={`h-4 w-4 ${userMode === "proprietaire" ? "text-primary" : "text-muted-foreground"}`} />
+                <span className="text-xs font-medium">Propriétaire</span>
+              </div>
+              <Switch
+                checked={userMode === "voyageur"}
+                onCheckedChange={handleUserModeChange}
+                className="data-[state=checked]:bg-primary"
+              />
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-medium">Voyageur</span>
+                <Plane className={`h-4 w-4 ${userMode === "voyageur" ? "text-primary" : "text-muted-foreground"}`} />
+              </div>
+            </div>
+            
             <Button variant="ghost" size="sm" className="w-full justify-start" onClick={() => { setSettingsOpen(true); setMobileMenuOpen(false); }}>
               <Settings className="h-4 w-4 mr-2" />
               Paramètres
@@ -950,6 +1017,32 @@ const Dashboard = () => {
                     ))}
                   </div>
                 )}
+              </CardContent>
+            </Card>
+
+            {/* Conciergerie permission */}
+            <Card className={!allVerified ? "opacity-50 pointer-events-none" : ""}>
+              <CardContent className="p-4 sm:p-6">
+                <div className="flex items-start gap-3">
+                  <Checkbox
+                    id="allowConciergeReporting"
+                    checked={allowConciergeReporting}
+                    onCheckedChange={(checked) => handleConciergePermissionChange(checked === true)}
+                    disabled={!allVerified}
+                  />
+                  <div className="space-y-1">
+                    <Label
+                      htmlFor="allowConciergeReporting"
+                      className="text-sm font-medium cursor-pointer flex items-center gap-2"
+                    >
+                      <Users className="h-4 w-4 text-primary" />
+                      Autoriser ma conciergerie
+                    </Label>
+                    <p className="text-xs text-muted-foreground">
+                      Si activé, votre conciergerie pourra signaler des fraudes sur vos biens au service SafeVerify.
+                    </p>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </div>
