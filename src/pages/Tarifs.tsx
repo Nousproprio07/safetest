@@ -1,6 +1,6 @@
 import Layout from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
-import { Check, Star, Shield, Zap, ChevronLeft, ChevronRight, X } from "lucide-react";
+import { Check, Star, Shield, Zap, ChevronLeft, ChevronRight, X, Crown } from "lucide-react";
 import { useRef, useState, useEffect } from "react";
 import {
   Table,
@@ -81,20 +81,43 @@ const pricingPlans = [
     popular: false,
     icon: Zap,
   },
+  {
+    name: "Expert",
+    description: "Pour les gestionnaires multi-biens",
+    price: "1185",
+    verifications: "300",
+    pricePerVerif: "3,95€",
+    properties: "6 logements",
+    validity: "24 mois",
+    features: [
+      "300 vérifications incluses",
+      "Jusqu'à 6 logements",
+      "Score de confiance détaillé",
+      "Vérification d'identité",
+      "Vérification d'identité avancée",
+      "Vérification bancaire",
+      "Support par email",
+      "Support dédié prioritaire",
+      "Tableau de bord analytics",
+      "Validité 24 mois",
+    ],
+    popular: false,
+    icon: Crown,
+  },
 ];
 
 const comparisonFeatures = [
-  { name: "Vérifications incluses", essentiel: "10", pro: "30", premium: "50" },
-  { name: "Prix par vérification", essentiel: "4,90€", pro: "4,33€", premium: "4,10€" },
-  { name: "Logements", essentiel: "1", pro: "2", premium: "4" },
-  { name: "Score de confiance détaillé", essentiel: true, pro: true, premium: true },
-  { name: "Vérification d'identité", essentiel: true, pro: true, premium: true },
-  { name: "Vérification d'identité avancée", essentiel: true, pro: true, premium: true },
-  { name: "Vérification bancaire", essentiel: true, pro: true, premium: true },
-  { name: "Support par email", essentiel: true, pro: true, premium: true },
-  { name: "Support dédié", essentiel: true, pro: true, premium: true },
-  { name: "Tableau de bord analytics", essentiel: true, pro: true, premium: true },
-  { name: "Validité", essentiel: "12 mois", pro: "12 mois", premium: "24 mois" },
+  { name: "Vérifications incluses", essentiel: "10", pro: "30", premium: "50", expert: "300" },
+  { name: "Prix par vérification", essentiel: "4,90€", pro: "4,33€", premium: "4,10€", expert: "3,95€" },
+  { name: "Logements", essentiel: "1", pro: "2", premium: "4", expert: "6" },
+  { name: "Score de confiance détaillé", essentiel: true, pro: true, premium: true, expert: true },
+  { name: "Vérification d'identité", essentiel: true, pro: true, premium: true, expert: true },
+  { name: "Vérification d'identité avancée", essentiel: true, pro: true, premium: true, expert: true },
+  { name: "Vérification bancaire", essentiel: true, pro: true, premium: true, expert: true },
+  { name: "Support par email", essentiel: true, pro: true, premium: true, expert: true },
+  { name: "Support dédié", essentiel: true, pro: true, premium: true, expert: true },
+  { name: "Tableau de bord analytics", essentiel: true, pro: true, premium: true, expert: true },
+  { name: "Validité", essentiel: "12 mois", pro: "12 mois", premium: "24 mois", expert: "24 mois" },
 ];
 
 const Tarifs = () => {
@@ -276,6 +299,13 @@ const Tarifs = () => {
                         <span className="text-2xl font-bold text-primary">205€</span>
                       </div>
                     </TableHead>
+                    <TableHead className="text-center font-semibold text-foreground">
+                      <div className="flex flex-col items-center gap-1">
+                        <Crown className="w-5 h-5 text-primary" />
+                        <span>Expert</span>
+                        <span className="text-2xl font-bold text-primary">1185€</span>
+                      </div>
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -290,6 +320,9 @@ const Tarifs = () => {
                       </TableCell>
                       <TableCell className="text-center">
                         {renderFeatureValue(feature.premium)}
+                      </TableCell>
+                      <TableCell className="text-center">
+                        {renderFeatureValue(feature.expert)}
                       </TableCell>
                     </TableRow>
                   ))}
@@ -317,6 +350,14 @@ const Tarifs = () => {
                         className="w-full max-w-[160px]"
                       >
                         Choisir Premium
+                      </Button>
+                    </TableCell>
+                    <TableCell className="text-center py-6">
+                      <Button 
+                        variant="outline-primary" 
+                        className="w-full max-w-[160px]"
+                      >
+                        Choisir Expert
                       </Button>
                     </TableCell>
                   </TableRow>
