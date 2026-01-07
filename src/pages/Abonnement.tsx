@@ -8,8 +8,10 @@ import { Shield, ArrowLeft, Package, Plus, History, CreditCard, Calendar } from 
 // Mock data
 const currentPack = {
   name: "Standard",
-  credits: 12,
-  totalCredits: 15,
+  subscriptionCredits: 8,
+  subscriptionTotalCredits: 15,
+  rechargeCredits: 12,
+  rechargeTotalCredits: 20,
   purchaseDate: "15 décembre 2024",
   expiryDate: "15 décembre 2025",
   price: 50
@@ -17,7 +19,8 @@ const currentPack = {
 
 const purchaseHistory = [
   { id: 1, date: "15 déc. 2024", pack: "Standard", credits: 15, amount: "50€" },
-  { id: 2, date: "01 oct. 2024", pack: "Starter", credits: 5, amount: "29€" },
+  { id: 2, date: "01 oct. 2024", pack: "Recharge 20", credits: 20, amount: "90€", isRecharge: true },
+  { id: 3, date: "01 oct. 2024", pack: "Starter", credits: 5, amount: "29€" },
 ];
 
 const Abonnement = () => {
@@ -69,13 +72,28 @@ const Abonnement = () => {
                 </div>
               </CardHeader>
               <CardContent className="space-y-6">
-                {/* Credits */}
+                {/* Crédits abonnement */}
                 <div>
                   <div className="flex justify-between text-sm mb-2">
-                    <span>Crédits restants</span>
-                    <span className="font-semibold">{currentPack.credits} / {currentPack.totalCredits}</span>
+                    <span className="flex items-center gap-2">
+                      <Package className="h-4 w-4 text-primary" />
+                      Crédits abonnement (Pack)
+                    </span>
+                    <span className="font-semibold">{currentPack.subscriptionCredits} / {currentPack.subscriptionTotalCredits}</span>
                   </div>
-                  <Progress value={(currentPack.credits / currentPack.totalCredits) * 100} className="h-3" />
+                  <Progress value={(currentPack.subscriptionCredits / currentPack.subscriptionTotalCredits) * 100} className="h-3" />
+                </div>
+
+                {/* Crédits recharge */}
+                <div>
+                  <div className="flex justify-between text-sm mb-2">
+                    <span className="flex items-center gap-2">
+                      <Plus className="h-4 w-4 text-green-500" />
+                      Crédits recharge (Achetés en plus)
+                    </span>
+                    <span className="font-semibold">{currentPack.rechargeCredits} / {currentPack.rechargeTotalCredits}</span>
+                  </div>
+                  <Progress value={(currentPack.rechargeCredits / currentPack.rechargeTotalCredits) * 100} className="h-3 [&>div]:bg-green-500" />
                 </div>
 
                 {/* Details */}
@@ -157,16 +175,16 @@ const Abonnement = () => {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex justify-between">
-                  <span className="text-sm text-muted-foreground">Crédits utilisés</span>
-                  <span className="font-semibold">{currentPack.totalCredits - currentPack.credits}</span>
+                  <span className="text-sm text-muted-foreground">Crédits pack restants</span>
+                  <span className="font-semibold text-primary">{currentPack.subscriptionCredits}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-sm text-muted-foreground">Crédits restants</span>
-                  <span className="font-semibold text-primary">{currentPack.credits}</span>
+                  <span className="text-sm text-muted-foreground">Crédits recharge restants</span>
+                  <span className="font-semibold text-green-500">{currentPack.rechargeCredits}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-muted-foreground">Total acheté</span>
-                  <span className="font-semibold">20 crédits</span>
+                <div className="flex justify-between border-t pt-3">
+                  <span className="text-sm font-medium">Total crédits disponibles</span>
+                  <span className="font-bold">{currentPack.subscriptionCredits + currentPack.rechargeCredits}</span>
                 </div>
               </CardContent>
             </Card>
