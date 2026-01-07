@@ -814,7 +814,7 @@ const Dashboard = () => {
                       <Package className="h-6 w-6 sm:h-8 sm:w-8 text-primary shrink-0" />
                       <div>
                         <h3 className="font-semibold text-sm sm:text-base">Pack {selectedPackName || "actif"}</h3>
-                        <p className="text-xs sm:text-sm text-muted-foreground">{subscriptionTotalCredits + rechargeTotalCredits} vérifications - {selectedPackPrice}€</p>
+                        <p className="text-xs sm:text-sm text-muted-foreground">{subscriptionCredits + rechargeCredits} crédits restants</p>
                       </div>
                     </div>
                     <div className="flex gap-2 flex-wrap">
