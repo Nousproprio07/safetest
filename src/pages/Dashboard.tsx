@@ -38,7 +38,8 @@ import {
   User,
   Calendar,
   Users,
-  Plane
+  Plane,
+  Crown
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -340,6 +341,24 @@ const Dashboard = () => {
       features: [
         "50 vérifications incluses",
         "Jusqu'à 4 logements",
+        "Score de confiance détaillé",
+        "Tableau de bord analytics",
+        "Support dédié prioritaire",
+      ]
+    },
+    { 
+      id: "expert", 
+      name: "Expert", 
+      price: "1185", 
+      credits: 300, 
+      pricePerVerif: "3,95€",
+      properties: "6 logements",
+      validity: "24 mois",
+      description: "Pour les gestionnaires multi-biens",
+      icon: Crown,
+      features: [
+        "300 vérifications incluses",
+        "Jusqu'à 6 logements",
         "Score de confiance détaillé",
         "Tableau de bord analytics",
         "Support dédié prioritaire",

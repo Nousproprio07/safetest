@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Shield, Check, ArrowLeft, Zap, Star } from "lucide-react";
+import { Shield, Check, ArrowLeft, Zap, Star, Crown } from "lucide-react";
 
 // Simuler le pack actuel de l'utilisateur (à remplacer par les vraies données)
 const currentUserPack = "Essentiel";
@@ -66,6 +66,25 @@ const pricingPlans = [
     ],
     icon: Zap,
   },
+  {
+    name: "Expert",
+    description: "Pour les gestionnaires multi-biens",
+    price: "1185",
+    verifications: "300",
+    pricePerVerif: "3,95€",
+    properties: "6 logements",
+    validity: "24 mois",
+    features: [
+      "300 vérifications incluses",
+      "Jusqu'à 6 logements",
+      "Score de confiance détaillé",
+      "Vérification d'identité",
+      "Vérification bancaire",
+      "Support dédié prioritaire",
+      "Validité 24 mois",
+    ],
+    icon: Crown,
+  },
 ];
 
 const ChangerPack = () => {
@@ -105,7 +124,7 @@ const ChangerPack = () => {
         </div>
 
         {/* Packs grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 max-w-5xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 max-w-6xl mx-auto">
           {pricingPlans.map((plan) => (
             <Card 
               key={plan.name} 
