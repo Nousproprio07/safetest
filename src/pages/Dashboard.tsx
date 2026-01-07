@@ -1022,7 +1022,7 @@ const Dashboard = () => {
 
             {/* Conciergerie permission */}
             <Card className={!allVerified ? "opacity-50 pointer-events-none" : ""}>
-              <CardContent className="p-4 sm:p-6">
+              <CardContent className="p-4 sm:p-6 space-y-4">
                 <div className="flex items-start gap-3">
                   <Checkbox
                     id="allowConciergeReporting"
@@ -1043,6 +1043,20 @@ const Dashboard = () => {
                     </p>
                   </div>
                 </div>
+                
+                {/* Configurer conciergerie button */}
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="w-full justify-between text-xs sm:text-sm"
+                  disabled={!allVerified}
+                >
+                  <span className="flex items-center gap-2">
+                    <Settings className="h-4 w-4" />
+                    Configurer ma conciergerie
+                  </span>
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
               </CardContent>
             </Card>
           </div>
@@ -1134,22 +1148,6 @@ const Dashboard = () => {
                     <FileCheck className="h-4 w-4" />
                     Historique des signalements
                   </span>
-                  <ChevronRight className="h-4 w-4" />
-                </Button>
-                <Button variant="ghost" className="w-full justify-between text-xs sm:text-sm h-9 sm:h-10" asChild>
-                  <Link to="/changer-pack">
-                    Changer de pack
-                    <ChevronRight className="h-4 w-4" />
-                  </Link>
-                </Button>
-                <Button variant="ghost" className="w-full justify-between text-xs sm:text-sm h-9 sm:h-10" asChild>
-                  <Link to="/recharger-credits">
-                    Recharger mes crédits
-                    <ChevronRight className="h-4 w-4" />
-                  </Link>
-                </Button>
-                <Button variant="ghost" className="w-full justify-between text-xs sm:text-sm h-9 sm:h-10">
-                  Configurer la conciergerie
                   <ChevronRight className="h-4 w-4" />
                 </Button>
                 <Button variant="ghost" className="w-full justify-between text-xs sm:text-sm h-9 sm:h-10">
