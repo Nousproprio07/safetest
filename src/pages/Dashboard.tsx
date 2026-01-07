@@ -1100,47 +1100,68 @@ const Dashboard = () => {
           {/* Sidebar */}
           <div className="space-y-4 sm:space-y-6">
             {/* Account status - Desktop full version */}
-            <Card className="hidden sm:block">
-              <CardHeader className="p-4 sm:p-6 pb-2 sm:pb-4">
-                <CardTitle className="text-base sm:text-lg">Statut du compte</CardTitle>
-              </CardHeader>
-              <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0 space-y-3 sm:space-y-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs sm:text-sm">Email vérifié</span>
-                  {verificationSteps.email === "completed" ? (
-                    <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 text-green-500" />
-                  ) : (
-                    <Circle className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
-                  )}
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-xs sm:text-sm">Téléphone vérifié</span>
-                  {verificationSteps.phone === "completed" ? (
-                    <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 text-green-500" />
-                  ) : (
-                    <Circle className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
-                  )}
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-xs sm:text-sm">Identité vérifiée</span>
-                  {verificationSteps.kyc === "completed" ? (
-                    <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 text-green-500" />
-                  ) : (
-                    <Circle className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
-                  )}
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-xs sm:text-sm">Compte bancaire</span>
-                  {verificationSteps.bank === "completed" ? (
-                    <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 text-green-500" />
-                  ) : (
-                    <Circle className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Account status - Mobile compact version with renewal date */}
+            {(() => {
+              // Calculate renewal date for desktop display
+              const verificationDateDesktop = new Date();
+              const renewalDateDesktop = new Date(verificationDateDesktop);
+              renewalDateDesktop.setFullYear(renewalDateDesktop.getFullYear() + 1);
+              
+              const nowDesktop = new Date();
+              const daysUntilRenewalDesktop = Math.ceil((renewalDateDesktop.getTime() - nowDesktop.getTime()) / (1000 * 60 * 60 * 24));
+              const isUrgentDesktop = daysUntilRenewalDesktop <= 30;
+              
+              const formatDateDesktop = (date: Date) => {
+                return date.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
+              };
+              
+              return (
+                <Card className="hidden sm:block">
+                  <CardHeader className="p-4 sm:p-6 pb-2 sm:pb-4">
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-base sm:text-lg">Statut du compte</CardTitle>
+                      <div className={`flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium ${isUrgentDesktop ? "bg-orange-100 text-orange-700" : "bg-green-100 text-green-700"}`}>
+                        <Calendar className="h-3 w-3" />
+                        <span>{formatDateDesktop(renewalDateDesktop)}</span>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0 space-y-3 sm:space-y-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs sm:text-sm">Email vérifié</span>
+                      {verificationSteps.email === "completed" ? (
+                        <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 text-green-500" />
+                      ) : (
+                        <Circle className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
+                      )}
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs sm:text-sm">Téléphone vérifié</span>
+                      {verificationSteps.phone === "completed" ? (
+                        <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 text-green-500" />
+                      ) : (
+                        <Circle className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
+                      )}
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs sm:text-sm">Identité vérifiée</span>
+                      {verificationSteps.kyc === "completed" ? (
+                        <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 text-green-500" />
+                      ) : (
+                        <Circle className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
+                      )}
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs sm:text-sm">Compte bancaire</span>
+                      {verificationSteps.bank === "completed" ? (
+                        <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 text-green-500" />
+                      ) : (
+                        <Circle className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })()}
             {(() => {
               // Mock: account verified 1 year ago, renewal in 1 year
               const verificationDate = new Date();
