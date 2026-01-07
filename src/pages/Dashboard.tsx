@@ -878,24 +878,66 @@ const Dashboard = () => {
 
             {/* Verification progress - collapsible when all verified */}
             {allVerified && !showVerificationDetails ? (
-              <Card className="border-green-200 bg-green-50/50">
-                <CardContent className="p-4 sm:p-6">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-green-100 flex items-center justify-center shrink-0">
-                      <CheckCircle2 className="h-5 w-5 sm:h-6 sm:w-6 text-green-600" />
+              <>
+                <Card className="border-green-200 bg-green-50/50">
+                  <CardContent className="p-4 sm:p-6">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-green-100 flex items-center justify-center shrink-0">
+                        <CheckCircle2 className="h-5 w-5 sm:h-6 sm:w-6 text-green-600" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-green-800 text-sm sm:text-base">Compte vérifié ✓</h3>
+                        <p className="text-xs sm:text-sm text-green-700">
+                          Toutes vos vérifications sont complétées
+                        </p>
+                      </div>
+                      <Badge variant="outline" className="bg-green-100 text-green-700 border-green-300">
+                        4/4
+                      </Badge>
                     </div>
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-green-800 text-sm sm:text-base">Compte vérifié ✓</h3>
-                      <p className="text-xs sm:text-sm text-green-700">
-                        Toutes vos vérifications sont complétées
-                      </p>
-                    </div>
-                    <Badge variant="outline" className="bg-green-100 text-green-700 border-green-300">
-                      4/4
-                    </Badge>
-                  </div>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+                
+                {/* Mobile: Prochaine vérification - right after Compte vérifié */}
+                {(() => {
+                  const verificationDate = new Date();
+                  const renewalDate = new Date(verificationDate);
+                  renewalDate.setFullYear(renewalDate.getFullYear() + 1);
+                  
+                  const now = new Date();
+                  const daysUntilRenewal = Math.ceil((renewalDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+                  const isUrgent = daysUntilRenewal <= 30;
+                  
+                  const formatDate = (date: Date) => {
+                    return date.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
+                  };
+                  
+                  return (
+                    <Card className={`sm:hidden ${isUrgent ? "border-orange-300 bg-orange-50/50" : "border-green-200 bg-green-50/50"}`}>
+                      <CardContent className="p-4">
+                        <div className="flex items-center gap-3">
+                          <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${isUrgent ? "bg-orange-100" : "bg-green-100"}`}>
+                            <Calendar className={`h-5 w-5 ${isUrgent ? "text-orange-600" : "text-green-600"}`} />
+                          </div>
+                          <div className="flex-1">
+                            <p className={`text-xs ${isUrgent ? "text-orange-600" : "text-green-600"}`}>
+                              {isUrgent ? "Renouvellement bientôt" : "Prochaine vérification"}
+                            </p>
+                            <p className={`font-semibold text-sm ${isUrgent ? "text-orange-700" : "text-green-700"}`}>
+                              {formatDate(renewalDate)}
+                            </p>
+                          </div>
+                          {isUrgent && (
+                            <Badge className="bg-orange-500 text-white">
+                              {daysUntilRenewal}j
+                            </Badge>
+                          )}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
+                })()}
+              </>
             ) : (
               <Card>
                 <CardHeader className="p-4 sm:p-6 pb-2 sm:pb-4">
@@ -1156,62 +1198,6 @@ const Dashboard = () => {
                         <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 text-green-500" />
                       ) : (
                         <Circle className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })()}
-            {/* Mobile: Compte vérifié card */}
-            {allVerified && (
-              <Card className="sm:hidden border-green-200 bg-green-50/50">
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 bg-green-100">
-                      <CheckCircle2 className="h-5 w-5 text-green-600" />
-                    </div>
-                    <div className="flex-1">
-                      <p className="font-semibold text-sm text-green-700">Compte vérifié</p>
-                      <p className="text-xs text-green-600">Toutes les vérifications sont complètes</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Mobile: Prochaine vérification - only shown after verifications complete */}
-            {allVerified && (() => {
-              const verificationDate = new Date();
-              const renewalDate = new Date(verificationDate);
-              renewalDate.setFullYear(renewalDate.getFullYear() + 1);
-              
-              const now = new Date();
-              const daysUntilRenewal = Math.ceil((renewalDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-              const isUrgent = daysUntilRenewal <= 30;
-              
-              const formatDate = (date: Date) => {
-                return date.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
-              };
-              
-              return (
-                <Card className={`sm:hidden ${isUrgent ? "border-orange-300 bg-orange-50/50" : "border-green-200 bg-green-50/50"}`}>
-                  <CardContent className="p-4">
-                    <div className="flex items-center gap-3">
-                      <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${isUrgent ? "bg-orange-100" : "bg-green-100"}`}>
-                        <Calendar className={`h-5 w-5 ${isUrgent ? "text-orange-600" : "text-green-600"}`} />
-                      </div>
-                      <div className="flex-1">
-                        <p className={`text-xs ${isUrgent ? "text-orange-600" : "text-green-600"}`}>
-                          {isUrgent ? "Renouvellement bientôt" : "Prochaine vérification"}
-                        </p>
-                        <p className={`font-semibold text-sm ${isUrgent ? "text-orange-700" : "text-green-700"}`}>
-                          {formatDate(renewalDate)}
-                        </p>
-                      </div>
-                      {isUrgent && (
-                        <Badge className="bg-orange-500 text-white">
-                          {daysUntilRenewal}j
-                        </Badge>
                       )}
                     </div>
                   </CardContent>
