@@ -1113,6 +1113,40 @@ const Dashboard = () => {
               </CardContent>
             </Card>
 
+            {/* Message automatique */}
+            <Card>
+              <CardHeader className="p-4 sm:p-6 pb-2 sm:pb-4">
+                <CardTitle className="text-base sm:text-lg flex items-center gap-2">
+                  <Mail className="h-4 w-4 text-primary" />
+                  Message automatique
+                </CardTitle>
+                <CardDescription className="text-xs sm:text-sm">
+                  À envoyer à vos voyageurs sur Airbnb/Booking
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0">
+                <div className="p-3 bg-muted rounded-lg text-xs sm:text-sm space-y-2">
+                  <p>Bonjour et merci pour votre réservation ! 🏠</p>
+                  <p>Pour garantir la sécurité de tous, nous utilisons SafeVerify pour vérifier l'identité de nos voyageurs.</p>
+                  <p>Merci de compléter votre vérification en cliquant sur ce lien : <span className="text-primary font-medium">[Lien de vérification]</span></p>
+                  <p>Cette étape ne prend que 2 minutes. À très bientôt !</p>
+                </div>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="w-full mt-3"
+                  onClick={() => {
+                    const message = `Bonjour et merci pour votre réservation ! 🏠\n\nPour garantir la sécurité de tous, nous utilisons SafeVerify pour vérifier l'identité de nos voyageurs.\n\nMerci de compléter votre vérification en cliquant sur ce lien : [Lien de vérification]\n\nCette étape ne prend que 2 minutes. À très bientôt !`;
+                    navigator.clipboard.writeText(message);
+                    toast.success("Message copié dans le presse-papiers");
+                  }}
+                >
+                  <Copy className="h-4 w-4 mr-2" />
+                  Copier le message
+                </Button>
+              </CardContent>
+            </Card>
+
             {/* Email ingestion info */}
             <Card>
               <CardHeader className="p-4 sm:p-6 pb-2 sm:pb-4">
