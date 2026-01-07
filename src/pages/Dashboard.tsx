@@ -247,6 +247,7 @@ const Dashboard = () => {
   const [fraudHistoryOpen, setFraudHistoryOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [showVerificationDetails, setShowVerificationDetails] = useState(false);
+  const [showVerificationPage, setShowVerificationPage] = useState(false);
   
   // User mode (Propriétaire / Voyageur)
   const [userMode, setUserMode] = useState<"proprietaire" | "voyageur">(() => {
@@ -714,14 +715,124 @@ const Dashboard = () => {
         </div>
       )}
 
-      <div className={`container mx-auto px-4 py-4 sm:py-8 ${!hasSelectedPack ? "blur-sm pointer-events-none" : ""}`}>
-        {/* Welcome section */}
-        <div className="mb-6 sm:mb-8">
-          <h1 className="text-xl sm:text-3xl font-bold mb-1 sm:mb-2">Bienvenue, Propriétaire</h1>
-          <p className="text-sm sm:text-base text-muted-foreground">
-            Complétez vos vérifications pour accéder à toutes les fonctionnalités.
-          </p>
+      {/* Verification Page - Full screen view */}
+      {showVerificationPage ? (
+        <div className="container mx-auto px-4 py-4 sm:py-8">
+          {/* Back button */}
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="mb-4"
+            onClick={() => setShowVerificationPage(false)}
+          >
+            <ChevronLeft className="h-4 w-4 mr-2" />
+            Retour au Dashboard
+          </Button>
+
+          {/* Verification card */}
+          {(() => {
+            const verificationDate = new Date();
+            const renewalDate = new Date(verificationDate);
+            renewalDate.setFullYear(renewalDate.getFullYear() + 1);
+            
+            const now = new Date();
+            const daysUntilRenewal = Math.ceil((renewalDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+            const canRenew = daysUntilRenewal <= 30;
+
+            return (
+              <Card>
+                <CardHeader className="p-4 sm:p-6 pb-2 sm:pb-4">
+                  <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                    <Shield className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+                    Vérifications personnelles
+                  </CardTitle>
+                  <CardDescription className="text-xs sm:text-sm">
+                    {canRenew 
+                      ? "Vous pouvez mettre à jour vos vérifications" 
+                      : "Vos vérifications sont à jour"
+                    }
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0 space-y-4">
+                  {/* Progress bar */}
+                  <div className="mb-4 sm:mb-6">
+                    <div className="flex justify-between text-xs sm:text-sm mb-2">
+                      <span>Progression</span>
+                      <span className="font-semibold">{completedSteps}/4 complétées</span>
+                    </div>
+                    <Progress value={progressPercentage} className="h-2 sm:h-3" />
+                  </div>
+
+                  {/* Steps */}
+                  <div className="space-y-3">
+                    <VerificationStep
+                      step="A"
+                      title="Email"
+                      description="Confirmez votre adresse email via un code OTP"
+                      icon={Mail}
+                      status={canRenew ? verificationSteps.email : "completed"}
+                      onStart={() => canRenew && handleStartVerification("email")}
+                    />
+                    <VerificationStep
+                      step="B"
+                      title="SMS"
+                      description="Validez votre numéro de téléphone"
+                      icon={Phone}
+                      status={canRenew ? verificationSteps.phone : "completed"}
+                      onStart={() => canRenew && handleStartVerification("phone")}
+                    />
+                    <VerificationStep
+                      step="C"
+                      title="KYC"
+                      description="Pièce d'identité + selfie via Stripe Identity"
+                      icon={FileCheck}
+                      status={canRenew ? verificationSteps.kyc : "completed"}
+                      onStart={() => canRenew && handleStartVerification("kyc")}
+                    />
+                    <VerificationStep
+                      step="D"
+                      title="Bancaire"
+                      description="Connexion sécurisée via TrueLayer"
+                      icon={CreditCard}
+                      status={canRenew ? verificationSteps.bank : "completed"}
+                      onStart={() => canRenew && handleStartVerification("bank")}
+                    />
+                  </div>
+
+                  {/* Renewal info */}
+                  {canRenew ? (
+                    <div className="p-3 bg-orange-50 border border-orange-200 rounded-lg">
+                      <p className="text-sm text-orange-700 font-medium">
+                        ⚠️ Renouvellement dans {daysUntilRenewal} jours
+                      </p>
+                      <p className="text-xs text-orange-600 mt-1">
+                        Cliquez sur "Démarrer" pour mettre à jour vos vérifications.
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
+                      <p className="text-sm text-green-700 font-medium">
+                        ✓ Vérifications valides
+                      </p>
+                      <p className="text-xs text-green-600 mt-1">
+                        Prochaine mise à jour possible dans {daysUntilRenewal - 30} jours.
+                      </p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            );
+          })()}
         </div>
+      ) : (
+        <div className={`container mx-auto px-4 py-4 sm:py-8 ${!hasSelectedPack ? "blur-sm pointer-events-none" : ""}`}>
+          {/* Welcome section */}
+          <div className="mb-6 sm:mb-8">
+            <h1 className="text-xl sm:text-3xl font-bold mb-1 sm:mb-2">Bienvenue, Propriétaire</h1>
+            <p className="text-sm sm:text-base text-muted-foreground">
+              Complétez vos vérifications pour accéder à toutes les fonctionnalités.
+            </p>
+          </div>
 
         {/* Fraud Alerts Section - Only visible after verification complete and property added */}
         {allVerified && properties.length > 0 && mockVerifications.filter(v => v.status === "fraud_detected").length > 0 && (
@@ -1288,7 +1399,7 @@ const Dashboard = () => {
                 <Button 
                   variant="ghost" 
                   className="w-full justify-between text-xs sm:text-sm h-9 sm:h-10"
-                  onClick={() => setShowVerificationDetails(!showVerificationDetails)}
+                  onClick={() => setShowVerificationPage(true)}
                 >
                   <span className="flex items-center gap-2">
                     <Shield className="h-4 w-4" />
@@ -1304,7 +1415,8 @@ const Dashboard = () => {
             </Card>
           </div>
         </div>
-      </div>
+        </div>
+      )}
 
       {/* Create Property Dialog */}
       <CreatePropertyDialog
