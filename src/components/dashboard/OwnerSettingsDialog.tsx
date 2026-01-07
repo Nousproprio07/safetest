@@ -87,40 +87,6 @@ const OwnerSettingsDialog = ({
         </DialogHeader>
 
         <div className="space-y-6 py-4">
-          {/* Concierge permissions */}
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <Users className="h-4 w-4 text-primary" />
-              <h3 className="font-semibold text-sm">Permissions conciergerie</h3>
-            </div>
-            
-            <div className="space-y-4 pl-6">
-              <div className="flex items-start gap-3 p-3 bg-muted rounded-lg">
-                <Checkbox
-                  id="allowConciergeReporting"
-                  checked={settings.allowConciergeReporting}
-                  onCheckedChange={(checked) =>
-                    handleSettingChange("allowConciergeReporting", checked === true)
-                  }
-                />
-                <div className="space-y-1">
-                  <Label
-                    htmlFor="allowConciergeReporting"
-                    className="text-sm font-medium cursor-pointer"
-                  >
-                    Autoriser ma conciergerie à faire des signalements en mon nom
-                  </Label>
-                  <p className="text-xs text-muted-foreground">
-                    Si activé, votre conciergerie pourra signaler des fraudes sur vos biens
-                    au service SafeVerify. Sinon, vous seul pourrez créer des signalements.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <Separator />
-
           {/* Notification preferences */}
           <div>
             <div className="flex items-center gap-2 mb-3">
