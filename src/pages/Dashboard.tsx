@@ -1080,8 +1080,8 @@ const Dashboard = () => {
 
           {/* Sidebar */}
           <div className="space-y-4 sm:space-y-6">
-            {/* Account status */}
-            <Card>
+            {/* Account status - Desktop full version */}
+            <Card className="hidden sm:block">
               <CardHeader className="p-4 sm:p-6 pb-2 sm:pb-4">
                 <CardTitle className="text-base sm:text-lg">Statut du compte</CardTitle>
               </CardHeader>
@@ -1120,6 +1120,48 @@ const Dashboard = () => {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Account status - Mobile compact version with renewal date */}
+            {(() => {
+              // Mock: account verified 1 year ago, renewal in 1 year
+              const verificationDate = new Date();
+              verificationDate.setFullYear(verificationDate.getFullYear() - 0); // Verified today for demo
+              const renewalDate = new Date(verificationDate);
+              renewalDate.setFullYear(renewalDate.getFullYear() + 1);
+              
+              const now = new Date();
+              const daysUntilRenewal = Math.ceil((renewalDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+              const isUrgent = daysUntilRenewal <= 30;
+              
+              const formatDate = (date: Date) => {
+                return date.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
+              };
+              
+              return (
+                <Card className={`sm:hidden ${isUrgent ? "border-orange-300 bg-orange-50/50" : "border-green-200 bg-green-50/50"}`}>
+                  <CardContent className="p-4">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${isUrgent ? "bg-orange-100" : "bg-green-100"}`}>
+                        <Calendar className={`h-5 w-5 ${isUrgent ? "text-orange-600" : "text-green-600"}`} />
+                      </div>
+                      <div className="flex-1">
+                        <p className={`text-xs ${isUrgent ? "text-orange-600" : "text-green-600"}`}>
+                          {isUrgent ? "Renouvellement bientôt" : "Prochaine vérification"}
+                        </p>
+                        <p className={`font-semibold text-sm ${isUrgent ? "text-orange-700" : "text-green-700"}`}>
+                          {formatDate(renewalDate)}
+                        </p>
+                      </div>
+                      {isUrgent && (
+                        <Badge className="bg-orange-500 text-white">
+                          {daysUntilRenewal}j
+                        </Badge>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })()}
 
             {/* Message automatique */}
             <Card>
