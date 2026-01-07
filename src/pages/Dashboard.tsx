@@ -229,8 +229,10 @@ const Dashboard = () => {
 
   // Mock state for pack
   const [hasPack, setHasPack] = useState(false);
-  const [verificationCredits, setVerificationCredits] = useState(0);
-  const [totalCredits, setTotalCredits] = useState(0);
+  const [subscriptionCredits, setSubscriptionCredits] = useState(0);
+  const [subscriptionTotalCredits, setSubscriptionTotalCredits] = useState(0);
+  const [rechargeCredits, setRechargeCredits] = useState(5);
+  const [rechargeTotalCredits, setRechargeTotalCredits] = useState(10);
 
   // Properties state
   const [properties, setProperties] = useState<Property[]>([]);
@@ -344,8 +346,8 @@ const Dashboard = () => {
       setSelectedPackPrice(pack.price);
       setHasSelectedPack(true);
       setHasPack(true);
-      setVerificationCredits(pack.credits);
-      setTotalCredits(pack.credits);
+      setSubscriptionCredits(pack.credits);
+      setSubscriptionTotalCredits(pack.credits);
     }
   };
 
@@ -736,7 +738,7 @@ const Dashboard = () => {
                       <Package className="h-6 w-6 sm:h-8 sm:w-8 text-primary shrink-0" />
                       <div>
                         <h3 className="font-semibold text-sm sm:text-base">Pack {selectedPackName || "actif"}</h3>
-                        <p className="text-xs sm:text-sm text-muted-foreground">{totalCredits} vérifications - {selectedPackPrice}€</p>
+                        <p className="text-xs sm:text-sm text-muted-foreground">{subscriptionTotalCredits + rechargeTotalCredits} vérifications - {selectedPackPrice}€</p>
                       </div>
                     </div>
                     <div className="flex gap-2 flex-wrap">
@@ -748,12 +750,31 @@ const Dashboard = () => {
                       </Button>
                     </div>
                   </div>
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-xs sm:text-sm">
-                      <span>Vérifications restantes</span>
-                      <span className="font-semibold">{verificationCredits} / {totalCredits}</span>
+                  
+                  {/* Crédits abonnement */}
+                  <div className="space-y-4">
+                    <div>
+                      <div className="flex flex-col sm:flex-row sm:justify-between text-xs sm:text-sm mb-2 gap-1">
+                        <span className="flex items-center gap-2">
+                          <Package className="h-4 w-4 text-primary shrink-0" />
+                          <span>Crédits abonnement</span>
+                        </span>
+                        <span className="font-semibold">{subscriptionCredits} / {subscriptionTotalCredits}</span>
+                      </div>
+                      <Progress value={subscriptionTotalCredits > 0 ? (subscriptionCredits / subscriptionTotalCredits) * 100 : 0} className="h-2 sm:h-3" />
                     </div>
-                    <Progress value={(verificationCredits / totalCredits) * 100} className="h-2" />
+
+                    {/* Crédits recharge */}
+                    <div>
+                      <div className="flex flex-col sm:flex-row sm:justify-between text-xs sm:text-sm mb-2 gap-1">
+                        <span className="flex items-center gap-2">
+                          <Plus className="h-4 w-4 text-green-500 shrink-0" />
+                          <span>Crédits recharge</span>
+                        </span>
+                        <span className="font-semibold">{rechargeCredits} / {rechargeTotalCredits}</span>
+                      </div>
+                      <Progress value={rechargeTotalCredits > 0 ? (rechargeCredits / rechargeTotalCredits) * 100 : 0} className="h-2 sm:h-3 [&>div]:bg-green-500" />
+                    </div>
                   </div>
                 </CardContent>
               </Card>
