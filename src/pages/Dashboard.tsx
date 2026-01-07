@@ -459,21 +459,30 @@ const Dashboard = () => {
         {/* Mobile menu */}
         {mobileMenuOpen && (
           <div className="sm:hidden border-t border-border bg-card px-4 py-3 space-y-3">
-            {/* Mode switch for mobile */}
-            <div className="flex items-center justify-between p-2 bg-muted rounded-lg">
-              <div className="flex items-center gap-2">
-                <User className={`h-4 w-4 ${userMode === "proprietaire" ? "text-primary" : "text-muted-foreground"}`} />
-                <span className="text-xs font-medium">Propriétaire</span>
-              </div>
-              <Switch
-                checked={userMode === "voyageur"}
-                onCheckedChange={handleUserModeChange}
-                className="data-[state=checked]:bg-primary"
-              />
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-medium">Voyageur</span>
-                <Plane className={`h-4 w-4 ${userMode === "voyageur" ? "text-primary" : "text-muted-foreground"}`} />
-              </div>
+            {/* Mode switch for mobile - optimized toggle */}
+            <div className="flex rounded-lg bg-muted p-1 gap-1">
+              <button
+                onClick={() => userMode !== "proprietaire" && handleUserModeChange(false)}
+                className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-md text-xs font-medium transition-all ${
+                  userMode === "proprietaire" 
+                    ? "bg-background text-primary shadow-sm" 
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                <User className="h-4 w-4" />
+                Propriétaire
+              </button>
+              <button
+                onClick={() => userMode !== "voyageur" && handleUserModeChange(true)}
+                className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-md text-xs font-medium transition-all ${
+                  userMode === "voyageur" 
+                    ? "bg-background text-primary shadow-sm" 
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                <Plane className="h-4 w-4" />
+                Voyageur
+              </button>
             </div>
             
             <Button variant="ghost" size="sm" className="w-full justify-start" onClick={() => { setSettingsOpen(true); setMobileMenuOpen(false); }}>
